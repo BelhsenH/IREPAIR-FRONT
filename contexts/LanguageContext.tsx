@@ -125,7 +125,7 @@ const translations = {
         additionalNotes: "Notes supplémentaires",
         additionalInfo: "Informations supplémentaires...",
         createRequest: "Créer la demande",
-        requestHelpText: "Après avoir soumis votre demande, les utilisateurs ipiece ayant des véhicules correspondants seront notifiés et pourront vous contacter via le système de messagerie ou par téléphone.",
+        requestHelpText: "Après avoir soumis votre demande, les utilisateurs ipiece ayant des pièces de rechange correspondants seront notifiés et pourront vous contacter via le système de messagerie ou par téléphone.",
         
         // Success/Error messages
         requestCreated: "Demande créée",

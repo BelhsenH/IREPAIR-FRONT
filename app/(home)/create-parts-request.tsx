@@ -663,7 +663,7 @@ const CreatePartsRequestScreen = () => {
         </Text>
       </View>
 
-      <ScrollView style={tw`flex-1 p-6`} showsVerticalScrollIndicator={false}>
+      <ScrollView style={tw`flex-1 p-6`} contentContainerStyle={tw`pb-8`} showsVerticalScrollIndicator={false}>
         {/* VIN Input */}
         <View style={tw`mb-6`}>
           <Text style={tw`text-lg font-semibold text-gray-900 mb-3`}>
