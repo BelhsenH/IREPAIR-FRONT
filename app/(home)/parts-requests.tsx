@@ -127,7 +127,7 @@ const PartsRequestsScreen = () => {
     
     return (
       <TouchableOpacity
-        style={tw`bg-white rounded-xl p-4 mb-4 border border-gray-200 shadow-sm`}
+        style={tw`bg-white rounded-xl p-3 mb-3 border border-gray-200 shadow-sm`}
         onPress={() => {
           if (request.conversationId) {
             router.push(`/messages` as any);
@@ -135,12 +135,12 @@ const PartsRequestsScreen = () => {
         }}
       >
         {/* Header */}
-        <View style={tw`flex-row justify-between items-start mb-3`}>
+        <View style={tw`flex-row justify-between items-start mb-2`}>
           <View style={tw`flex-1`}>
             <Text style={tw`text-lg font-bold text-gray-900 mb-1`}>
               {getPartName()}
             </Text>
-            <View style={tw`flex-row items-center flex-wrap gap-2`}>
+            <View style={tw`flex-row items-center flex-wrap gap-1.5`}>
               <View style={[tw`flex-row items-center px-3 py-1 rounded-full border`, tw`${getStatusColor(request.status)}`]}>
                 <Ionicons name={getStatusIcon(request.status)} size={14} color="currentColor" />
                 <Text style={tw`text-sm font-medium ml-1`}>
@@ -168,79 +168,83 @@ const PartsRequestsScreen = () => {
 
         {/* Vehicle Information Section */}
         {request.vehicleInfo && (
-          <View style={tw`bg-gray-50 rounded-lg p-3 mb-3`}>
-            <View style={tw`flex-row items-center mb-2`}>
+          <View style={tw`bg-gray-50 rounded-lg p-2.5 mb-2`}>
+            <View style={tw`flex-row items-center mb-1.5`}>
               <Ionicons name="car" size={16} color="#6B7280" style={tw`mr-2`} />
               <Text style={tw`text-sm font-medium text-gray-700`}>{translations[language].vehicle}:</Text>
             </View>
-            
-            <View style={tw`ml-6`}>
+
+            <View style={tw`ml-5`}>
               <Text style={tw`text-sm font-semibold text-gray-800 mb-1`}>
                 {request.vehicleInfo.brand} {request.vehicleInfo.model}
               </Text>
-              
-              <View style={tw`flex-row flex-wrap gap-2 mb-2`}>
-                <View style={tw`bg-blue-100 rounded-full px-2 py-1`}>
-                  <Text style={tw`text-xs text-blue-700`}>{translations[language].year}: {request.vehicleInfo.year}</Text>
-                </View>
-                
+
+              <View style={tw`flex-row flex-wrap gap-1.5 mb-1.5`}>
+                {request.vehicleInfo.year && (
+                  <View style={tw`bg-blue-100 rounded-full px-2 py-0.5`}>
+                    <Text style={tw`text-xs text-blue-700`}>{translations[language].year}: {request.vehicleInfo.year}</Text>
+                  </View>
+                )}
+
                 {request.vehicleInfo.fuelType && (
-                  <View style={tw`bg-green-100 rounded-full px-2 py-1`}>
+                  <View style={tw`bg-green-100 rounded-full px-2 py-0.5`}>
                     <Text style={tw`text-xs text-green-700`}>{translations[language].fuel}: {request.vehicleInfo.fuelType}</Text>
                   </View>
                 )}
-                
+
                 {request.vehicleInfo.engineType && (
-                  <View style={tw`bg-purple-100 rounded-full px-2 py-1`}>
+                  <View style={tw`bg-purple-100 rounded-full px-2 py-0.5`}>
                     <Text style={tw`text-xs text-purple-700`}>{translations[language].engine}: {request.vehicleInfo.engineType}</Text>
                   </View>
                 )}
               </View>
               
-              {request.vehicleInfo.licensePlate && (
-                <View style={tw`flex-row items-center mb-1`}>
-                  <Ionicons name="card-outline" size={14} color="#6B7280" style={tw`mr-1`} />
-                  <Text style={tw`text-xs text-gray-600`}>
-                    {translations[language].licensePlate}: {request.vehicleInfo.licensePlate}
-                  </Text>
-                </View>
-              )}
-              
-              {request.vehicleInfo.vin && (
-                <View style={tw`flex-row items-center mb-1`}>
-                  <Ionicons name="barcode-outline" size={14} color="#6B7280" style={tw`mr-1`} />
-                  <Text style={tw`text-xs text-gray-600`}>
-                    {translations[language].vin}: {request.vehicleInfo.vin}
-                  </Text>
-                </View>
-              )}
-              
-              {request.vehicleInfo.color && (
-                <View style={tw`flex-row items-center mb-1`}>
-                  <Ionicons name="color-palette-outline" size={14} color="#6B7280" style={tw`mr-1`} />
-                  <Text style={tw`text-xs text-gray-600`}>
-                    {translations[language].color}: {request.vehicleInfo.color}
-                  </Text>
-                </View>
-              )}
-              
-              {request.vehicleInfo.kilometrage && (
-                <View style={tw`flex-row items-center`}>
-                  <Ionicons name="speedometer-outline" size={14} color="#6B7280" style={tw`mr-1`} />
-                  <Text style={tw`text-xs text-gray-600`}>
-                    {translations[language].mileage}: {request.vehicleInfo.kilometrage.toLocaleString()} km
-                  </Text>
-                </View>
-              )}
+              <View style={tw`flex-row flex-wrap gap-3 mt-1`}>
+                {request.vehicleInfo.licensePlate && (
+                  <View style={tw`flex-row items-center`}>
+                    <Ionicons name="card-outline" size={12} color="#6B7280" style={tw`mr-1`} />
+                    <Text style={tw`text-xs text-gray-600`}>
+                      {translations[language].licensePlate}: {request.vehicleInfo.licensePlate}
+                    </Text>
+                  </View>
+                )}
+
+                {request.vehicleInfo.vin && (
+                  <View style={tw`flex-row items-center`}>
+                    <Ionicons name="barcode-outline" size={12} color="#6B7280" style={tw`mr-1`} />
+                    <Text style={tw`text-xs text-gray-600`}>
+                      {translations[language].vin}: {request.vehicleInfo.vin}
+                    </Text>
+                  </View>
+                )}
+
+                {request.vehicleInfo.color && (
+                  <View style={tw`flex-row items-center`}>
+                    <Ionicons name="color-palette-outline" size={12} color="#6B7280" style={tw`mr-1`} />
+                    <Text style={tw`text-xs text-gray-600`}>
+                      {translations[language].color}: {request.vehicleInfo.color}
+                    </Text>
+                  </View>
+                )}
+
+                {request.vehicleInfo.kilometrage && (
+                  <View style={tw`flex-row items-center`}>
+                    <Ionicons name="speedometer-outline" size={12} color="#6B7280" style={tw`mr-1`} />
+                    <Text style={tw`text-xs text-gray-600`}>
+                      {translations[language].mileage}: {request.vehicleInfo.kilometrage.toLocaleString()} km
+                    </Text>
+                  </View>
+                )}
+              </View>
             </View>
           </View>
         )}
 
         {/* Engagement Metrics */}
         {request.engagementMetrics && (
-          <View style={tw`bg-blue-50 rounded-lg p-3 mb-3 border border-blue-200`}>
-            <Text style={tw`text-sm font-semibold text-blue-900 mb-2`}>{translations[language].requestVisibility}</Text>
-            <View style={tw`flex-row flex-wrap gap-4`}>
+          <View style={tw`bg-blue-50 rounded-lg p-2.5 mb-2 border border-blue-200`}>
+            <Text style={tw`text-sm font-semibold text-blue-900 mb-1.5`}>{translations[language].requestVisibility}</Text>
+            <View style={tw`flex-row flex-wrap gap-3`}>
               <View style={tw`flex-row items-center`}>
                 <Ionicons name="eye-outline" size={16} color="#2563EB" />
                 <Text style={tw`text-sm text-blue-700 ml-1`}>
@@ -275,10 +279,10 @@ const PartsRequestsScreen = () => {
 
         {/* Provider Info */}
         {request.providerId && typeof request.providerId === 'object' && (
-          <View style={tw`bg-green-50 rounded-lg p-3 mb-3 border border-green-200`}>
-            <View style={tw`flex-row items-center mb-2`}>
-              <View style={tw`w-10 h-10 rounded-full bg-green-100 items-center justify-center mr-3`}>
-                <Ionicons name="storefront" size={18} color="#16A34A" />
+          <View style={tw`bg-green-50 rounded-lg p-2.5 mb-2 border border-green-200`}>
+            <View style={tw`flex-row items-center mb-1.5`}>
+              <View style={tw`w-8 h-8 rounded-full bg-green-100 items-center justify-center mr-2.5`}>
+                <Ionicons name="storefront" size={16} color="#16A34A" />
               </View>
               <View style={tw`flex-1`}>
                 <Text style={tw`text-sm font-semibold text-green-900 mb-1`}>
@@ -294,16 +298,16 @@ const PartsRequestsScreen = () => {
                 )}
               </View>
               <TouchableOpacity
-                style={tw`bg-green-600 px-3 py-2 rounded-lg`}
+                style={tw`bg-green-600 px-2.5 py-1.5 rounded-lg`}
                 onPress={() => router.push(`/messages` as any)}
               >
                 <Text style={tw`text-white text-xs font-medium`}>{translations[language].chat}</Text>
               </TouchableOpacity>
             </View>
             {request.estimatedDeliveryDate && (
-              <View style={tw`flex-row items-center pt-2 border-t border-green-200`}>
-                <Ionicons name="calendar-outline" size={14} color="#16A34A" />
-                <Text style={tw`text-xs text-gray-700 ml-2`}>
+              <View style={tw`flex-row items-center pt-1.5 mt-1.5 border-t border-green-200`}>
+                <Ionicons name="calendar-outline" size={12} color="#16A34A" />
+                <Text style={tw`text-xs text-gray-700 ml-1.5`}>
                   {translations[language].estimatedDelivery}: {formatDate(request.estimatedDeliveryDate)}
                 </Text>
               </View>
@@ -313,7 +317,7 @@ const PartsRequestsScreen = () => {
 
         {/* Notes */}
         {request.notes && (
-          <View style={tw`bg-gray-50 rounded-lg p-3 mb-3`}>
+          <View style={tw`bg-gray-50 rounded-lg p-2.5 mb-2`}>
             <Text style={tw`text-sm text-gray-700`}>
               &quot;{request.notes}&quot;
             </Text>
@@ -321,14 +325,14 @@ const PartsRequestsScreen = () => {
         )}
 
         {/* Footer */}
-        <View style={tw`flex-row justify-between items-center pt-3 border-t border-gray-100`}>
+        <View style={tw`flex-row justify-between items-center pt-2 mt-2 border-t border-gray-100`}>
           <Text style={tw`text-xs text-gray-500`}>
             {formatDate(request.createdAt || '')}
           </Text>
           <View style={tw`flex-row items-center`}>
             {request.conversationId && (
               <TouchableOpacity
-                style={tw`bg-blue-600 px-3 py-2 rounded-lg mr-2`}
+                style={tw`bg-blue-600 px-2.5 py-1.5 rounded-lg mr-2`}
                 onPress={() => router.push(`/messages` as any)}
               >
                 <Text style={tw`text-white text-xs font-medium`}>{translations[language].message}</Text>
@@ -402,7 +406,7 @@ const PartsRequestsScreen = () => {
         </View>
       ) : (
         <ScrollView
-          style={tw`flex-1 px-4`}
+          style={tw`flex-1 px-3`}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
