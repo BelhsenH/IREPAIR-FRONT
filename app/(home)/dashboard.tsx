@@ -232,7 +232,7 @@ const Dashboard = () => {
               <Ionicons name="chevron-forward" size={18} color={Colors.textLight} />
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.sidebarItem} onPress={() => router.push('/(home)/create-parts-request')}>
+            {/*<TouchableOpacity style={styles.sidebarItem} onPress={() => router.push('/(home)/create-parts-request')}>
               <View style={styles.sidebarIconContainer}>
                 <Ionicons name="cube" size={22} color={Colors.secondary} />
               </View>
@@ -240,7 +240,7 @@ const Dashboard = () => {
                 {translations[language].spareParts}
               </Text>
               <Ionicons name="chevron-forward" size={18} color={Colors.textLight} />
-            </TouchableOpacity>
+            </TouchableOpacity>*/}
             
             <TouchableOpacity style={styles.sidebarItem} onPress={() => router.push('/(home)/parts-requests')}>
               <View style={styles.sidebarIconContainer}>

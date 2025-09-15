@@ -147,7 +147,7 @@ const EditProfile = () => {
             )}
 
             {/* Profile Header Card */}
-            <View style={styles.profileHeaderCard}>
+            {/*<View style={styles.profileHeaderCard}>
               <LinearGradient
                 colors={[Colors.accent, '#FBBF24']}
                 style={styles.profileHeaderGradient}
@@ -158,7 +158,7 @@ const EditProfile = () => {
                 <Text style={styles.profileHeaderTitle}>{translations[language].garageProfile}</Text>
                 <Text style={styles.profileHeaderSubtitle}>{translations[language].updateGarageInfo}</Text>
               </LinearGradient>
-            </View>
+            </View>*/}
 
             <View style={styles.form}>
               {/* Basic Information Section */}
@@ -406,6 +406,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   form: {
+    marginTop: 20,
     paddingHorizontal: 20,
   },
   section: {
