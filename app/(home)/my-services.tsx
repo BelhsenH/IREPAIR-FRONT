@@ -182,7 +182,7 @@ export default function MyServicesScreen() {
       }
       
       // Test basic connectivity
-      const testUrl = 'http://192.168.43.6:8888/api/maintenance/';
+      const testUrl = `${process.env.EXPO_PUBLIC_API_URL || 'http://192.168.100.14:8888'}/api/maintenance/`;
       const response = await fetch(testUrl, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }

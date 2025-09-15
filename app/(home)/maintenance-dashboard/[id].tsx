@@ -149,7 +149,7 @@ export default function IRepairMaintenanceDashboard() {
   const fetchDashboardData = useCallback(async () => {
     try {
       const token = await AsyncStorage.getItem('@auth_token');
-      const vehicleServiceUrl = `${config?.apiUrl || 'http://192.168.43.6:8888'}/api/vehicle`;
+      const vehicleServiceUrl = `${config?.apiUrl || process.env.EXPO_PUBLIC_API_URL || 'http://192.168.100.14:8888'}/api/vehicle`;
       
       const response = await fetch(
         `${vehicleServiceUrl}/${carId}/maintenance-dashboard`,

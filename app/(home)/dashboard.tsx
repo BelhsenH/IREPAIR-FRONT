@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert,  StatusBar, Platform, Dimensions, Image } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { router } from 'expo-router';
@@ -253,7 +252,7 @@ const Dashboard = () => {
               <Ionicons name="chevron-forward" size={18} color={Colors.textLight} />
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.sidebarItem} onPress={() => router.push('/appointments-calendar')}>
+            {/*<TouchableOpacity style={styles.sidebarItem} onPress={() => router.push('/appointments-calendar')}>
               <View style={styles.sidebarIconContainer}>
                 <Ionicons name="calendar" size={22} color={Colors.secondary} />
               </View>
@@ -261,7 +260,7 @@ const Dashboard = () => {
                 {translations[language].appointments}
               </Text>
               <Ionicons name="chevron-forward" size={18} color={Colors.textLight} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             
             <View style={styles.sidebarDivider} />
             
@@ -318,97 +317,7 @@ const Dashboard = () => {
         {/* Ads Section - Moved to top */}
         <AdsCarousel />
 
-        {/* Profile Overview Card */}
-        <View style={styles.profileContainer}>
-          <Text style={[styles.sectionTitle, { textAlign: isRTL ? 'right' : 'left' }]}>
-            {translations[language].profileTitle || 'Profil'}
-          </Text>
-          <View style={styles.profileCard}>
-            <LinearGradient
-              colors={[Colors.accent, '#FDB85C']}
-              style={styles.profileGradient}
-            >
-              <View style={styles.profileHeader}>
-                <View style={styles.profileAvatarLarge}>
-                  <Ionicons name="business" size={32} color={Colors.surface} />
-                </View>
-                <View style={styles.profileHeaderText}>
-                  <Text style={styles.profileName}>
-                    {user?.nomGarage || 'Garage Name'}
-                  </Text>
-                  <Text style={styles.profileSubtitle}>
-                    {translations[language].managerName || 'Gérant'}: {user?.nomResponsable || 'Gérant'}
-                  </Text>
-                </View>
-              </View>
-            </LinearGradient>
-            
-            <View style={styles.profileDetails}>
-              <View style={styles.profileDetailRow}>
-                <Ionicons name="location" size={18} color={Colors.secondary} />
-                <Text style={styles.profileDetailText}>
-                  {user?.adresse || user?.zoneGeo || 'Emplacement'}
-                </Text>
-              </View>
-              <View style={styles.profileDetailRow}>
-                <Ionicons name="call" size={18} color={Colors.secondary} />
-                <Text style={styles.profileDetailText}>
-                  {user?.phoneNumber || 'Téléphone'}
-                </Text>
-              </View>
-              <View style={styles.profileDetailRow}>
-                <Ionicons name="construct" size={18} color={Colors.secondary} />
-                <Text style={styles.profileDetailText}>
-                  {user?.typeService?.join(', ') || 'Services'}
-                </Text>
-              </View>
-            </View>
-            
-            <TouchableOpacity
-              style={styles.editButton}
-              onPress={() => router.push('/(home)/edit-profile')}
-            >
-              <Ionicons name="create" size={18} color={Colors.surface} />
-              <Text style={styles.editButtonText}>
-                {translations[language].editProfile || 'Modifier le profil'}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Map Section */}
-        {user?.geolocation && (
-          <View style={styles.mapContainer}>
-            <Text style={[styles.sectionTitle, { textAlign: isRTL ? 'right' : 'left' }]}>
-              <Ionicons name="map" size={20} color={Colors.primary} /> {translations[language].mapLocation || 'Emplacement sur la carte'}
-            </Text>
-            <View style={styles.mapCard}>
-              <MapView
-                style={styles.map}
-                region={{
-                  latitude: user.geolocation.lat,
-                  longitude: user.geolocation.lng,
-                  latitudeDelta: 0.01,
-                  longitudeDelta: 0.01,
-                }}
-                showsUserLocation={false}
-                scrollEnabled={false}
-                zoomEnabled={false}
-                pitchEnabled={false}
-                rotateEnabled={false}
-              >
-                <Marker
-                  coordinate={{
-                    latitude: user.geolocation.lat,
-                    longitude: user.geolocation.lng,
-                  }}
-                  title={user.nomGarage}
-                  description={user.adresse || user.zoneGeo}
-                />
-              </MapView>
-            </View>
-          </View>
-        )}
+    {/* Profile and localisation removed as requested */}
 
         {/* Quick Actions Grid */}
         <View style={styles.quickActions}>
@@ -448,7 +357,7 @@ const Dashboard = () => {
               <Text style={styles.actionSubtitle}>{translations[language].viewAllServices}</Text>
             </TouchableOpacity>
             
-            <TouchableOpacity
+            {/*<TouchableOpacity
               style={styles.actionCard}
               onPress={() => router.push('/appointments-calendar')}
             >
@@ -462,7 +371,7 @@ const Dashboard = () => {
                 {translations[language].appointments}
               </Text>
               <Text style={styles.actionSubtitle}>{translations[language].planAndManage}</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             
             <TouchableOpacity
               style={styles.actionCard}
@@ -726,10 +635,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   actionCard: {
-    width: '48%',
+    width: '31%',
     backgroundColor: Colors.cardBackground,
     borderRadius: 16,
-    padding: 16,
+    padding: 12,
     marginBottom: 16,
     alignItems: 'center',
     shadowColor: '#000',
