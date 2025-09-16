@@ -9,7 +9,7 @@ const isProduction=!isDevelopment;
 
 // Check if running on Android emulator
 const isAndroidEmulator = Constants.platform?.android && Constants.isDevice === false;
-const defaultApiUrl = process.env.EXPO_PUBLIC_API_URL || (isAndroidEmulator ? 'http://10.0.2.2:8888' : 'http://192.168.100.14:8888');
+const defaultApiUrl = process.env.EXPO_PUBLIC_API_URL || (isAndroidEmulator ? 'http://10.0.2.2:8888' : 'http://162.19.66.250:6892');
 
 const config: Config = {
     apiUrl: defaultApiUrl,
@@ -26,4 +26,4 @@ if (isProduction) {
 }
 
 export default config;
-export type {Config};
+export type { Config };

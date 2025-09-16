@@ -1,22 +1,19 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-  ActivityIndicator,
-  RefreshControl,
-  TextInput,
-  Modal,
-  StatusBar,
-  Platform,
-  SafeAreaView,
-} from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  Modal,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { serviceAPI } from '../../scripts/service-script';
 
@@ -182,7 +179,7 @@ export default function MyServicesScreen() {
       }
       
       // Test basic connectivity
-      const testUrl = `${process.env.EXPO_PUBLIC_API_URL || 'http://192.168.100.14:8888'}/api/maintenance/`;
+      const testUrl = `${process.env.EXPO_PUBLIC_API_URL || 'http://162.19.66.250:6892'}/api/maintenance/`;
       const response = await fetch(testUrl, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }

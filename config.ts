@@ -10,7 +10,7 @@ const isDevelopment = __DEV__;
 const isProduction = !isDevelopment;
 
 const config: Config = {
-  apiUrl: process.env.EXPO_PUBLIC_API_URL || 'http://192.168.100.14:8888',
+  apiUrl: process.env.EXPO_PUBLIC_API_URL || 'http://162.19.66.250:6892',
   appName: Constants.expoConfig?.name || 'IREPAIR Mobile App',
   version: Constants.expoConfig?.version || '1.0.0',
 };
@@ -18,7 +18,7 @@ const config: Config = {
 // Override for different environments
 if (isDevelopment) {
   // Use environment variable or fallback to IP address for remote access
-  config.apiUrl = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.100.14:8888';
+  config.apiUrl = process.env.EXPO_PUBLIC_API_URL || 'http://162.19.66.250:6892';
 }
 
 if (isProduction) {

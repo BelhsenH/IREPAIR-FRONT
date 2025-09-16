@@ -1,20 +1,20 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  View, 
-  StyleSheet, 
-  ScrollView, 
-  Alert, 
-  TouchableOpacity, 
-  RefreshControl,
-  ActivityIndicator
-} from 'react-native';
-import { Text } from 'react-native-paper';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useLanguage } from '../../../contexts/LanguageContext';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+    ActivityIndicator,
+    Alert,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    TouchableOpacity,
+    View
+} from 'react-native';
+import { Text } from 'react-native-paper';
 import config from '../../../config';
+import { useLanguage } from '../../../contexts/LanguageContext';
 
 // Professional color palette for mechanics
 const Colors = {
@@ -149,7 +149,7 @@ export default function IRepairMaintenanceDashboard() {
   const fetchDashboardData = useCallback(async () => {
     try {
       const token = await AsyncStorage.getItem('@auth_token');
-      const vehicleServiceUrl = `${config?.apiUrl || process.env.EXPO_PUBLIC_API_URL || 'http://192.168.100.14:8888'}/api/vehicle`;
+      const vehicleServiceUrl = `${config?.apiUrl || process.env.EXPO_PUBLIC_API_URL || 'http://162.19.66.250:6892'}/api/vehicle`;
       
       const response = await fetch(
         `${vehicleServiceUrl}/${carId}/maintenance-dashboard`,

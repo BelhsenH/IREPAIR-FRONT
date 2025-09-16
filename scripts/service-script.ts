@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Linking } from 'react-native';
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.100.14:8888';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://162.19.66.250:6892';
 
 interface ServiceData {
   type: string;
