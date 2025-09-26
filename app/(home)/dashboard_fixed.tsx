@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, SafeAreaView, StatusBar, Platform } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
-import { useLanguage } from '../../contexts/LanguageContext';
-import { useAuth } from '../../contexts/AuthContext';
-import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { Alert, Platform, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import OpenStreetMapView from '../../components/OpenStreetMapView';
+import { useAuth } from '../../contexts/AuthContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 // Professional color palette for mechanics
 const Colors = {
@@ -266,29 +266,17 @@ const Dashboard = () => {
               <Ionicons name="map" size={20} color={Colors.primary} /> {translations[language].mapLocation}
             </Text>
             <View style={styles.mapCard}>
-              <MapView
-                style={styles.map}
-                region={{
+              <OpenStreetMapView
+                location={{
                   latitude: user.geolocation.lat,
                   longitude: user.geolocation.lng,
-                  latitudeDelta: 0.01,
-                  longitudeDelta: 0.01,
                 }}
-                showsUserLocation={false}
-                scrollEnabled={false}
-                zoomEnabled={false}
-                pitchEnabled={false}
-                rotateEnabled={false}
-              >
-                <Marker
-                  coordinate={{
-                    latitude: user.geolocation.lat,
-                    longitude: user.geolocation.lng,
-                  }}
-                  title={user.nomGarage}
-                  description={user.adresse || user.zoneGeo}
-                />
-              </MapView>
+                title={user.nomGarage}
+                description={user.adresse || user.zoneGeo}
+                interactive={false}
+                zoom={15}
+                style={styles.map}
+              />
             </View>
           </View>
         )}

@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, Modal, ActivityIndicator } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Picker } from '@react-native-picker/picker';
-import { useLanguage } from '../../contexts/LanguageContext';
-import { useRouter } from 'expo-router';
-import MapView, { Marker, MapPressEvent } from 'react-native-maps';
-import { authService } from '../../scripts/auth-script';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Location from 'expo-location';
-import { ModernInput } from '../../components/modern/ModernInput';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LinearGradient } from 'expo-linear-gradient';
+import * as Location from 'expo-location';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { ActivityIndicator, Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ModernInput } from '../../components/modern/ModernInput';
+import OpenStreetMapView from '../../components/OpenStreetMapView';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { authService } from '../../scripts/auth-script';
 
 const SignupScreen = () => {
   const { language, translations, toggleLanguage } = useLanguage();
@@ -63,9 +62,8 @@ const SignupScreen = () => {
     );
   };
 
-  const handleMapPress = (event: MapPressEvent) => {
-    const { latitude, longitude } = event.nativeEvent.coordinate;
-    setPickedLocation({ latitude, longitude });
+  const handleLocationSelect = (location: { latitude: number; longitude: number }) => {
+    setPickedLocation(location);
   };
 
   const handleConfirmLocation = () => {
@@ -88,7 +86,7 @@ const SignupScreen = () => {
           longitudeDelta: 0.05,
         });
       }
-    } catch (e) {
+    } catch {
       // fallback to default if error
       setInitialRegion({
         latitude: 36.7525,
@@ -139,7 +137,7 @@ const SignupScreen = () => {
       try {
         const [lat, lng] = geolocation.split(',').map(Number);
         const registerData = {
-          type: 'garagiste',
+          type: 'garagiste' as const,
           nomGarage: garageName,
           adresse: '', // required by backend, send as empty string
           zoneGeo: '', // required by backend, send as empty string
@@ -223,15 +221,12 @@ const SignupScreen = () => {
             </View>
             <Modal visible={mapVisible} animationType="slide" transparent={false}>
               <View style={{ flex: 1 }}>
-                <MapView
+                <OpenStreetMapView
+                  location={pickedLocation || initialRegion}
+                  interactive={true}
+                  onLocationSelect={handleLocationSelect}
                   style={{ flex: 1 }}
-                  initialRegion={initialRegion}
-                  onPress={handleMapPress}
-                >
-                  {pickedLocation && (
-                    <Marker coordinate={pickedLocation} />
-                  )}
-                </MapView>
+                />
                 <View style={{ flexDirection: 'row', justifyContent: 'space-around', padding: 16, backgroundColor: '#fff' }}>
                   <TouchableOpacity onPress={() => setMapVisible(false)}>
                     <Text style={{ color: 'red', fontSize: 18 }}>Cancel</Text>
