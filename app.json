@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "irepair",
-    "slug": "irepair",
+    "name": "iRepair Suite",
+    "slug": "irepair-suite",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -9,7 +9,12 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "splash": {
+        "image": "./assets/images/irepairlogo.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff"
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -17,7 +22,17 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.amenybouabdallah.irepair"
+      "package": "com.amenybouabdallah.irepair",
+      "splash": {
+        "image": "./assets/images/irepairlogo.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff",
+        "mdpi": "./assets/images/irepairlogo.png",
+        "hdpi": "./assets/images/irepairlogo.png",
+        "xhdpi": "./assets/images/irepairlogo.png",
+        "xxhdpi": "./assets/images/irepairlogo.png",
+        "xxxhdpi": "./assets/images/irepairlogo.png"
+      }
     },
     "web": {
       "bundler": "metro",
