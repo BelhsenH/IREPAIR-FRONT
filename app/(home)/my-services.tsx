@@ -622,16 +622,6 @@ export default function MyServicesScreen() {
               <Text style={styles.emptySubtitle}>
                 {translations[language].tapToAddNewService}
               </Text>
-              
-              {/* Debug Connection Status */}
-              {connectionStatus && (
-                <View style={styles.debugContainer}>
-                  <Text style={styles.debugText}>{connectionStatus}</Text>
-                  <TouchableOpacity style={styles.testButton} onPress={testConnection}>
-                    <Text style={styles.testButtonText}>Test Connection</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
             </View>
           ) : (
             services.map(renderServiceCard)
