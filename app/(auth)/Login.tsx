@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useLanguage } from '../../contexts/LanguageContext';
-import { router } from 'expo-router';
-import { authService } from '../../scripts/auth-script';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
+import React, { useState } from 'react';
+import { Dimensions, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ModernInput } from '../../components/modern/ModernInput';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { authService } from '../../scripts/auth-script';
+
+const { width } = Dimensions.get('window');
 
 const countryCodes = [
   { code: '+213', flag: '🇩🇿' },
@@ -91,39 +93,12 @@ const LoginScreen = () => {
   };
 
   // --- Add this for phone code selector style ---
-  const phoneCodeContainerStyle = {
-    flexDirection: 'row' as const,
-    marginBottom: 10,
-    gap: 8,
-    justifyContent: 'flex-start' as const,
-  };
-  const phoneCodeButtonStyle = (active: boolean) => ({
-    flex: 1,
-    paddingVertical: 12,
-    borderRadius: 16,
-    backgroundColor: active ? '#fff' : 'rgba(255,255,255,0.7)',
-    borderWidth: 1,
-    borderColor: active ? '#000000ff' : '#ccc',
-    alignItems: 'center' as const,
-    marginRight: 8,
-  });
-  const phoneCodeTextStyle = (active: boolean) => ({
-    fontSize: 16,
-    color: active ? '#0c0c0cff' : '#1A1A1A',
-    fontWeight: active ? '700' : '500',
-  });
-  const phonePrefixStyle = {
-    color: '#aa1414ff',
-    fontWeight: '700' as const,
-    fontSize: 18,
-    marginRight: 6,
-  };
 
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={0}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
     >
       <View style={styles.container}>
         <Image
@@ -132,128 +107,171 @@ const LoginScreen = () => {
           resizeMode="cover"
         />
         <LinearGradient
-          colors={['transparent', 'rgba(0,0,0,0.7)']}
+          colors={['rgba(0,0,0,0.3)', 'rgba(0,0,0,0.8)', 'rgba(0,0,0,0.95)']}
           style={styles.gradient}
-          locations={[0.5, 1]}
+          locations={[0, 0.6, 1]}
         />
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-end' }}
-          keyboardShouldPersistTaps="handled"
-        >
-          <View style={styles.content}>
-            <View style={styles.textContainer}>
-              <Text style={styles.title}>
-                {translations[language].loginTitle || 'Welcome Back'}
-              </Text>
-              <Text style={styles.subtitle}>
-                {translations[language].loginSubtitle || 'Sign in with your phone number and password'}
-              </Text>
-            </View>
-
-            {error && (
-              <Text style={{ color: 'red', marginBottom: 10 }}>{error}</Text>
-            )}
-
-            {/* --- Phone Code Selector --- */}
-            <View style={phoneCodeContainerStyle}>
-              {countryCodes.map(({ code, flag }) => (
-                <TouchableOpacity
-                  key={code}
-                  style={phoneCodeButtonStyle(countryCode === code)}
-                  onPress={() => setCountryCode(code)}
-                >
-                  <Text style={phoneCodeTextStyle(countryCode === code)}>
-                    {flag} {code}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            {/* Phone Input with Modern Component */}
-            <View style={styles.modernInputContainer}>
-              <ModernInput
-                label={translations[language].phonePlaceholder || 'Phone Number'}
-                value={phoneNumber}
-                onChangeText={setPhoneNumber}
-                keyboardType="phone-pad"
-                maxLength={10}
-                variant="filled"
-                style={styles.modernInputStyle}
-              />
-            </View>
-
-            <View style={styles.modernInputContainer}>
-              <ModernInput
-                label={translations[language].passwordPlaceholder || 'Password'}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                variant="filled"
-                style={styles.modernInputStyle}
-              />
-            </View>
-
-            <TouchableOpacity
-              style={styles.forgotPassword}
-              onPress={() => router.push('/(auth)/forgotPassword')}
-            >
-              <Text style={styles.forgotPasswordText}>
-                {translations[language].forgotPassword || 'Forgot Password?'}
-              </Text>
-            </TouchableOpacity>
-
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity 
-                style={[styles.button, isLoading && styles.buttonDisabled]} 
-                onPress={handleLogin}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <View style={styles.loadingContainer}>
-                    <Ionicons name="refresh" size={20} color="#1A1A1A" style={styles.spinIcon} />
-                    <Text style={styles.buttonText}>
-                      {translations[language].signingIn || 'Signing In...'}
-                    </Text>
-                  </View>
-                ) : (
-                  <Text style={styles.buttonText}>
-                    {translations[language].login || 'Login'}
-                  </Text>
-                )}
-              </TouchableOpacity>
-            </View>
-            <View style={styles.signupLinkContainer}>
-              <Text style={styles.signupText}>
-                {translations[language].noAccount || "Don't have an account?"}{' '}
-                <Text
-                  style={styles.signupLink}
-                  onPress={() => { router.push(`/(auth)/signup`); }}
-                >
-                  {translations[language].register || 'Sign Up'}
-                </Text>
-              </Text>
-            </View>
-          </View>
-        </ScrollView>
+        
+        {/* Enhanced Language Toggle */}
         <TouchableOpacity
-          style={{
-            position: 'absolute',
-            top: 40,
-            right: 30,
-            backgroundColor: 'rgba(255,255,255,0.7)',
-            paddingHorizontal: 16,
-            paddingVertical: 6,
-            borderRadius: 16,
-            zIndex: 10,
-          }}
+          style={styles.languageToggle}
           onPress={() => {
             if (typeof toggleLanguage === 'function') toggleLanguage();
           }}
         >
-          <Text style={{ color: '#1A1A1A', fontWeight: 'bold', fontSize: 16 }}>
+          <Ionicons name="language-outline" size={16} color="#000" style={styles.langIcon} />
+          <Text style={styles.languageText}>
             {language === 'fr' ? 'العربية' : 'Français'}
           </Text>
         </TouchableOpacity>
+
+        {/* Back Button */}
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.back()}
+        >
+          <Ionicons name="arrow-back" size={24} color="#fff" />
+        </TouchableOpacity>
+
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          bounces={false}
+        >
+          <View style={styles.content}>
+            {/* Header Section */}
+            <View style={styles.headerSection}>
+              <View style={styles.logoContainer}>
+                <Image
+                  source={require('../../assets/images/irepairlogo.png')}
+                  style={styles.miniLogo}
+                  resizeMode="contain"
+                />
+              </View>
+              <Text style={styles.title}>
+                {translations[language].loginTitle || 'Welcome Back'}
+              </Text>
+              <Text style={styles.subtitle}>
+                {translations[language].loginSubtitle || 'Sign in to continue to your account'}
+              </Text>
+            </View>
+
+            {/* Form Section */}
+            <View style={styles.formSection}>
+              {error && (
+                <View style={styles.errorContainer}>
+                  <Ionicons name="alert-circle" size={20} color="#FF3B30" />
+                  <Text style={styles.errorText}>{error}</Text>
+                </View>
+              )}
+
+              {/* Country Code Selector */}
+              <View style={styles.countryCodeContainer}>
+                {countryCodes.map(({ code, flag }) => (
+                  <TouchableOpacity
+                    key={code}
+                    style={[
+                      styles.countryCodeButton,
+                      countryCode === code && styles.countryCodeButtonActive
+                    ]}
+                    onPress={() => setCountryCode(code)}
+                  >
+                    <Text style={styles.countryCodeEmoji}>{flag}</Text>
+                    <Text style={[
+                      styles.countryCodeText,
+                      countryCode === code && styles.countryCodeTextActive
+                    ]}>
+                      {code}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              {/* Phone Input */}
+              <View style={styles.inputContainer}>
+                <ModernInput
+                  label="Phone"
+                  value={phoneNumber}
+                  onChangeText={setPhoneNumber}
+                  keyboardType="phone-pad"
+                  maxLength={10}
+                  variant="filled"
+                  leftIcon={
+                    <View style={styles.phonePrefix}>
+                      <Text style={styles.phonePrefixText}>{countryCode}</Text>
+                    </View>
+                  }
+                />
+              </View>
+
+              {/* Password Input */}
+              <View style={styles.inputContainer}>
+                <ModernInput
+                  label="Password"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry
+                  variant="filled"
+                  leftIcon={<Ionicons name="lock-closed-outline" size={20} color="#666" />}
+                />
+              </View>
+
+              {/* Forgot Password */}
+              <TouchableOpacity
+                style={styles.forgotPassword}
+                onPress={() => router.push('/(auth)/forgotPassword')}
+              >
+                <Text style={styles.forgotPasswordText}>
+                  {translations[language].forgotPassword || 'Forgot Password?'}
+                </Text>
+              </TouchableOpacity>
+
+              {/* Login Button */}
+              <TouchableOpacity 
+                style={[styles.loginButton, isLoading && styles.buttonDisabled]} 
+                onPress={handleLogin}
+                disabled={isLoading}
+                activeOpacity={0.8}
+              >
+                {isLoading ? (
+                  <View style={styles.loadingContainer}>
+                    <Ionicons name="refresh" size={20} color="#000" style={styles.spinIcon} />
+                    <Text style={styles.loginButtonText}>
+                      {translations[language].signingIn || 'Signing In...'}
+                    </Text>
+                  </View>
+                ) : (
+                  <>
+                    <Ionicons name="log-in-outline" size={20} color="#000" style={styles.buttonIcon} />
+                    <Text style={styles.loginButtonText}>
+                      {translations[language].login || 'Sign In'}
+                    </Text>
+                  </>
+                )}
+              </TouchableOpacity>
+
+              {/* Divider */}
+              <View style={styles.divider}>
+                <View style={styles.dividerLine} />
+                <Text style={styles.dividerText}>or</Text>
+                <View style={styles.dividerLine} />
+              </View>
+
+              {/* Sign Up Link */}
+              <View style={styles.signupContainer}>
+                <Text style={styles.signupText}>
+                  {translations[language].noAccount || "Don't have an account?"}{' '}
+                </Text>
+                <TouchableOpacity onPress={() => router.push('/(auth)/signup')}>
+                  <Text style={styles.signupLink}>
+                    {translations[language].register || 'Create Account'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </ScrollView>
       </View>
     </KeyboardAvoidingView>
   );
@@ -263,7 +281,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: 'relative',
-    justifyContent: 'flex-end',
+    backgroundColor: '#000',
   },
   image: {
     ...StyleSheet.absoluteFillObject,
@@ -275,60 +293,245 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  languageToggle: {
+    position: 'absolute',
+    top: 50,
+    right: 20,
+    backgroundColor: 'rgba(255,255,255,0.95)',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    zIndex: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  langIcon: {
+    marginRight: 4,
+  },
+  languageText: {
+    color: '#000',
+    fontWeight: '600' as const,
+    fontSize: 14,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 50,
+    left: 20,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+  },
   content: {
     width: '100%',
     alignItems: 'center',
+    paddingHorizontal: 20,
     paddingBottom: 40,
     zIndex: 2,
+    minHeight: Dimensions.get('window').height - 100,
+    justifyContent: 'center',
   },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    minHeight: Dimensions.get('window').height - 100,
+  },
+  headerSection: {
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  logoContainer: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  miniLogo: {
+    width: 40,
+    height: 40,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: '800' as const,
+    color: '#FFFFFF',
+    textAlign: 'center',
+    marginBottom: 8,
+    letterSpacing: 0.5,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#E0E0E0',
+    textAlign: 'center',
+    lineHeight: 22,
+    opacity: 0.9,
+  },
+  formSection: {
+    width: '100%',
+    maxWidth: 400,
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 59, 48, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 59, 48, 0.3)',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 20,
+  },
+  errorText: {
+    color: '#FF3B30',
+    fontSize: 14,
+    fontWeight: '500' as const,
+    marginLeft: 8,
+    flex: 1,
+  },
+  countryCodeContainer: {
+    flexDirection: 'row',
+    marginBottom: 20,
+    gap: 12,
+  },
+  countryCodeButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  countryCodeButtonActive: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderColor: '#000',
+    borderWidth: 2,
+  },
+  countryCodeEmoji: {
+    fontSize: 18,
+    marginRight: 8,
+  },
+  countryCodeText: {
+    fontSize: 14,
+    fontWeight: '600' as const,
+    color: '#fff',
+  },
+  countryCodeTextActive: {
+    color: '#000',
+    fontWeight: '700' as const,
+  },
+  inputContainer: {
+    marginBottom: 20,
+  },
+  phonePrefix: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    borderRadius: 6,
+    marginRight: 8,
+  },
+  phonePrefixText: {
+    fontSize: 12,
+    fontWeight: '600' as const,
+    color: '#666',
+  },
+  forgotPassword: {
+    alignSelf: 'flex-end',
+    marginBottom: 30,
+  },
+  forgotPasswordText: {
+    fontSize: 14,
+    color: '#FFD700',
+    fontWeight: '500' as const,
+  },
+  loginButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 16,
+    borderRadius: 14,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  buttonDisabled: {
+    backgroundColor: 'rgba(255,255,255,0.6)',
+  },
+  buttonIcon: {
+    marginRight: 8,
+  },
+  loginButtonText: {
+    fontSize: 18,
+    fontWeight: '600' as const,
+    color: '#000',
+    letterSpacing: 0.5,
+  },
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  spinIcon: {
+    marginRight: 8,
+  },
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  dividerText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '500' as const,
+    marginHorizontal: 16,
+    opacity: 0.7,
+  },
+  signupContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+  },
+  signupText: {
+    color: '#E0E0E0',
+    fontSize: 16,
+  },
+  signupLink: {
+    color: '#FFD700',
+    fontWeight: '600' as const,
+    fontSize: 16,
+  },
+  // Unused styles to remove later
   textContainer: {
     alignItems: 'center',
     paddingHorizontal: 20,
     marginBottom: 40,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    textAlign: 'center',
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#CCCCCC',
-    textAlign: 'center',
-    lineHeight: 22,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '80%',
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    borderRadius: 25,
-    marginBottom: 15,
-    paddingHorizontal: 10,
-  },
-  picker: {
-    width: 150,
-    height: 50,
-    color: '#1A1A1A',
-  },
-  input: {
-    flex: 1,
-    height: 60,
-    fontSize: 18,
-    color: '#1A1A1A',
-    paddingHorizontal: 10,
-  },
-  forgotPassword: {
-    alignSelf: 'flex-end',
-    marginRight: '10%',
-    marginBottom: 20,
-  },
-  forgotPasswordText: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    fontWeight: '500',
   },
   buttonContainer: {
     flexDirection: 'column',
@@ -343,33 +546,13 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: '600' as const,
     color: '#1A1A1A',
   },
   signupLinkContainer: {
     alignItems: 'center',
     marginTop: 20,
     marginBottom: 10,
-  },
-  signupText: {
-    color: '#fff',
-    fontSize: 16,
-  },
-  signupLink: {
-    color: '#FFD700',
-    fontWeight: 'bold',
-    textDecorationLine: 'underline',
-  },
-  buttonDisabled: {
-    backgroundColor: 'rgba(255,255,255,0.6)',
-  },
-  loadingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  spinIcon: {
-    marginRight: 8,
   },
   modernInputContainer: {
     width: '85%',
@@ -387,7 +570,7 @@ const styles = StyleSheet.create({
   },
   phoneCodeText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '600' as const,
     color: '#333',
   },
 });

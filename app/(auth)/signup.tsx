@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { ActivityIndicator, Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ModernInput } from '../../components/modern/ModernInput';
 import OpenStreetMapView from '../../components/OpenStreetMapView';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -192,12 +192,9 @@ const SignupScreen = () => {
       case 1:
         return (
           <>
-            <Text style={styles.title}>
-              {translations[language].garageDetails || 'Garage Details'}
-            </Text>
             <View style={styles.modernInputContainer}>
               <ModernInput
-                label={translations[language].garageNamePlaceholder || 'Garage Name'}
+                label="Garage Name"
                 value={garageName}
                 onChangeText={setGarageName}
                 variant="filled"
@@ -205,49 +202,26 @@ const SignupScreen = () => {
                 style={styles.modernInputStyle}
               />
             </View>
-            <View style={styles.modernInputContainer}>
-              <TouchableOpacity
-                style={styles.modernLocationButton}
-                onPress={handleOpenMap}
-              >
-                <Ionicons name="location-outline" size={24} color="#1A1A1A" />
-                <Text style={styles.modernLocationButtonText}>
-                  {pickedLocation
-                    ? (translations[language].locationPicked || 'Location Selected ✓')
-                    : (translations[language].pickOnMap || 'Select Location on Map')}
-                </Text>
-                <Ionicons name="chevron-forward-outline" size={20} color="#666" />
-              </TouchableOpacity>
-            </View>
-            <Modal visible={mapVisible} animationType="slide" transparent={false}>
-              <View style={{ flex: 1 }}>
-                <OpenStreetMapView
-                  location={pickedLocation || initialRegion}
-                  interactive={true}
-                  onLocationSelect={handleLocationSelect}
-                  style={{ flex: 1 }}
-                />
-                <View style={{ flexDirection: 'row', justifyContent: 'space-around', padding: 16, backgroundColor: '#fff' }}>
-                  <TouchableOpacity onPress={() => setMapVisible(false)}>
-                    <Text style={{ color: 'red', fontSize: 18 }}>Cancel</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={handleConfirmLocation} disabled={!pickedLocation}>
-                    <Text style={{ color: pickedLocation ? 'green' : 'gray', fontSize: 18 }}>Confirm</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </Modal>
+            <TouchableOpacity
+              style={styles.modernLocationButton}
+              onPress={handleOpenMap}
+            >
+              <Ionicons name="location-outline" size={24} color="#1A1A1A" />
+              <Text style={styles.modernLocationButtonText}>
+                {pickedLocation
+                  ? (translations[language].locationPicked || 'Location Selected ✓')
+                  : (translations[language].pickOnMap || 'Select Location on Map')}
+              </Text>
+              <Ionicons name="chevron-forward-outline" size={20} color="#666" />
+            </TouchableOpacity>
           </>
         );
       case 2:
         return (
           <>
-            <Text style={styles.title}>
-              {translations[language].managerDetails || 'Manager Details'}
-            </Text>
             <View style={styles.modernInputContainer}>
               <ModernInput
-                label={translations[language].managerNamePlaceholder || 'Manager Name'}
+                label="Manager Name"
                 value={managerName}
                 onChangeText={setManagerName}
                 variant="filled"
@@ -256,7 +230,7 @@ const SignupScreen = () => {
               />
             </View>
             
-            {/* Country Code Selector */}
+            {/* Enhanced Country Code Selector */}
             <View style={styles.countryCodeContainer}>
               <TouchableOpacity
                 style={[styles.countryCodeButton, countryCode === '+213' && styles.countryCodeButtonActive]}
@@ -280,7 +254,7 @@ const SignupScreen = () => {
 
             <View style={styles.modernInputContainer}>
               <ModernInput
-                label={translations[language].phonePlaceholder || 'Phone Number'}
+                label="Phone"
                 value={phoneNumber}
                 onChangeText={setPhoneNumber}
                 keyboardType="phone-pad"
@@ -297,7 +271,7 @@ const SignupScreen = () => {
 
             <View style={styles.modernInputContainer}>
               <ModernInput
-                label={translations[language].emailPlaceholder || 'Email Address'}
+                label="Email"
                 value={email}
                 onChangeText={(text) => {
                   setEmail(text);
@@ -316,10 +290,7 @@ const SignupScreen = () => {
       case 3:
         return (
           <>
-            <Text style={styles.title}>
-              {translations[language].servicesTitle || 'Select Services'}
-            </Text>
-            <ScrollView style={styles.servicesContainer}>
+            <ScrollView style={styles.servicesContainer} showsVerticalScrollIndicator={false}>
               {services.map((service) => (
                 <TouchableOpacity
                   key={service}
@@ -329,7 +300,15 @@ const SignupScreen = () => {
                   ]}
                   onPress={() => handleServiceToggle(service)}
                 >
-                  <Text style={styles.serviceText}>{service}</Text>
+                  <Text style={[
+                    styles.serviceText,
+                    selectedServices.includes(service) && styles.serviceTextSelected
+                  ]}>
+                    {service}
+                  </Text>
+                  {selectedServices.includes(service) && (
+                    <Ionicons name="checkmark-circle" size={24} color="#000" />
+                  )}
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -338,12 +317,9 @@ const SignupScreen = () => {
       case 4:
         return (
           <>
-            <Text style={styles.title}>
-              {translations[language].passwordTitle || 'Set Password'}
-            </Text>
             <View style={styles.modernInputContainer}>
               <ModernInput
-                label={translations[language].passwordPlaceholder || 'Password'}
+                label="Password"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
@@ -358,65 +334,161 @@ const SignupScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Image
-        source={require('../../assets/images/intro.jpg')}
-        style={styles.image}
-        resizeMode="cover"
-      />
-      <LinearGradient
-        colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0.7)']}
-        style={styles.gradient}
-        locations={[0, 1]}
-      />
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+    <KeyboardAvoidingView 
+      style={{ flex: 1 }} 
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <View style={styles.container}>
+        <Image
+          source={require('../../assets/images/intro.jpg')}
+          style={styles.image}
+          resizeMode="cover"
+        />
+        <LinearGradient
+          colors={['rgba(0,0,0,0.3)', 'rgba(0,0,0,0.8)', 'rgba(0,0,0,0.95)']}
+          style={styles.gradient}
+          locations={[0, 0.6, 1]}
+        />
+      
+      {/* Enhanced Header */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.back()}
+        >
+          <Ionicons name="arrow-back" size={24} color="#fff" />
+        </TouchableOpacity>
+        
+        <TouchableOpacity
+          style={styles.languageButton}
+          onPress={() => {
+            if (typeof toggleLanguage === 'function') toggleLanguage();
+          }}
+        >
+          <Ionicons name="language-outline" size={16} color="#000" style={styles.langIcon} />
+          <Text style={styles.languageButtonText}>
+            {language === 'fr' ? 'العربية' : 'Français'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView 
+        contentContainerStyle={styles.scrollContent} 
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        bounces={false}
+      >
+        <View style={styles.content}>
+        {/* Enhanced Stepper */}
         <View style={styles.stepperContainer}>
+          <View style={styles.stepperHeader}>
+            <Text style={styles.stepNumber}>Step {step} of 4</Text>
+            <Text style={styles.stepTitle}>
+              {step === 1 && (translations[language].garageDetails || 'Garage Information')}
+              {step === 2 && (translations[language].managerDetails || 'Manager Details')}
+              {step === 3 && (translations[language].servicesTitle || 'Select Services')}
+              {step === 4 && (translations[language].passwordTitle || 'Set Password')}
+            </Text>
+          </View>
+          
           <View style={styles.stepperDotsContainer}>
             {[1, 2, 3, 4].map((s) => (
-              <View
-                key={s}
-                style={[
-                  styles.stepperDot,
-                  step === s && styles.stepperDotActive,
-                ]}
-              />
+              <React.Fragment key={s}>
+                <View
+                  style={[
+                    styles.stepperDot,
+                    step >= s && styles.stepperDotActive,
+                  ]}
+                >
+                  {step > s ? (
+                    <Ionicons name="checkmark" size={12} color="#000" />
+                  ) : (
+                    <Text style={[styles.stepperDotText, step >= s && styles.stepperDotTextActive]}>
+                      {s}
+                    </Text>
+                  )}
+                </View>
+                {s < 4 && <View style={[styles.stepperLine, step > s && styles.stepperLineActive]} />}
+              </React.Fragment>
             ))}
           </View>
         </View>
+
         {error && (
-          <Text style={styles.errorText}>{error}</Text>
+          <View style={styles.errorContainer}>
+            <Ionicons name="alert-circle" size={20} color="#FF3B30" />
+            <Text style={styles.errorText}>{error}</Text>
+          </View>
         )}
-        {renderStep()}
+
+        <View style={styles.formContainer}>
+          {renderStep()}
+        </View>
+
         <View style={styles.buttonContainer}>
           {step > 1 && (
-            <TouchableOpacity style={styles.button} onPress={handleBack}>
-              <Text style={styles.buttonText}>
+            <TouchableOpacity 
+              style={[styles.button, styles.secondaryButton]} 
+              onPress={handleBack}
+            >
+              <Ionicons name="arrow-back-outline" size={20} color="#fff" style={styles.buttonIcon} />
+              <Text style={[styles.buttonText, styles.secondaryButtonText]}>
                 {translations[language].back || 'Back'}
               </Text>
             </TouchableOpacity>
           )}
-          <TouchableOpacity style={[styles.button, loading && { opacity: 0.7 }]} onPress={handleNext} disabled={loading}>
+          <TouchableOpacity 
+            style={[styles.button, styles.primaryButton, loading && { opacity: 0.7 }]} 
+            onPress={handleNext} 
+            disabled={loading}
+          >
             {loading ? (
-              <ActivityIndicator color="#1A1A1A" />
+              <ActivityIndicator color="#000" />
             ) : (
-              <Text style={styles.buttonText}>
-                {step === 4 ? (translations[language].signup || 'Sign Up') : (translations[language].next || 'Next')}
-              </Text>
+              <>
+                <Text style={[styles.buttonText, styles.primaryButtonText]}>
+                  {step === 4 ? (translations[language].signup || 'Create Account') : (translations[language].next || 'Next')}
+                </Text>
+                {step < 4 && <Ionicons name="arrow-forward-outline" size={20} color="#000" style={styles.buttonIconRight} />}
+              </>
             )}
           </TouchableOpacity>
         </View>
+        </View>
       </ScrollView>
-      <TouchableOpacity
-        style={styles.languageButton}
-        onPress={() => {
-          if (typeof toggleLanguage === 'function') toggleLanguage();
-        }}
-      >
-        <Text style={styles.languageButtonText}>
-          {language === 'fr' ? 'العربية' : 'Français'}
-        </Text>
-      </TouchableOpacity>
+
+      {/* Map Modal */}
+      <Modal visible={mapVisible} animationType="slide" transparent={false}>
+        <View style={{ flex: 1 }}>
+          <OpenStreetMapView
+            location={pickedLocation || initialRegion}
+            interactive={true}
+            onLocationSelect={handleLocationSelect}
+            style={{ flex: 1 }}
+          />
+          <View style={styles.mapControls}>
+            <TouchableOpacity 
+              style={[styles.mapButton, styles.mapCancelButton]}
+              onPress={() => setMapVisible(false)}
+            >
+              <Ionicons name="close-outline" size={20} color="#fff" />
+              <Text style={styles.mapButtonText}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.mapButton, styles.mapConfirmButton, !pickedLocation && styles.mapButtonDisabled]}
+              onPress={handleConfirmLocation} 
+              disabled={!pickedLocation}
+            >
+              <Ionicons name="checkmark-outline" size={20} color={pickedLocation ? "#000" : "#999"} />
+              <Text style={[styles.mapButtonText, { color: pickedLocation ? "#000" : "#999" }]}>
+                Confirm Location
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
+  </KeyboardAvoidingView>
   );
 };
 
@@ -424,7 +496,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: 'relative',
-    backgroundColor: '#222',
+    backgroundColor: '#000',
   },
   image: {
     ...StyleSheet.absoluteFillObject,
@@ -437,39 +509,137 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingTop: 50,
+    paddingHorizontal: 20,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  languageButton: {
+    backgroundColor: 'rgba(255,255,255,0.95)',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  langIcon: {
+    marginRight: 4,
+  },
+  languageButtonText: {
+    color: '#000',
+    fontWeight: '600' as const,
+    fontSize: 14,
+  },
   content: {
     flexGrow: 1,
     width: '100%',
     alignItems: 'center',
     padding: 20,
-    paddingTop: 80,
+    paddingTop: 120,
     zIndex: 2,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 40,
   },
   stepperContainer: {
     alignItems: 'center',
+    marginBottom: 30,
+    width: '100%',
+  },
+  stepperHeader: {
+    alignItems: 'center',
     marginBottom: 20,
+  },
+  stepNumber: {
+    fontSize: 14,
+    color: '#FFD700',
+    fontWeight: '600' as const,
+    marginBottom: 4,
+  },
+  stepTitle: {
+    fontSize: 18,
+    fontWeight: '700' as const,
+    color: '#fff',
+    textAlign: 'center',
   },
   stepperDotsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 12,
-    gap: 10,
+    gap: 8,
   },
   stepperDot: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    backgroundColor: 'rgba(255,255,255,0.4)',
-    marginHorizontal: 4,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   stepperDotActive: {
     backgroundColor: '#FFD700',
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: '#1A1A1A',
+    borderColor: '#FFD700',
+  },
+  stepperDotText: {
+    fontSize: 12,
+    fontWeight: '600' as const,
+    color: '#fff',
+  },
+  stepperDotTextActive: {
+    color: '#000',
+  },
+  stepperLine: {
+    width: 30,
+    height: 2,
+    backgroundColor: 'rgba(255,255,255,0.3)',
+  },
+  stepperLineActive: {
+    backgroundColor: '#FFD700',
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 59, 48, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 59, 48, 0.3)',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 20,
+    width: '100%',
+  },
+  errorText: {
+    color: '#FF3B30',
+    fontSize: 14,
+    fontWeight: '500' as const,
+    marginLeft: 8,
+    flex: 1,
+  },
+  formContainer: {
+    width: '100%',
+    maxWidth: 400,
   },
   title: {
     fontSize: 28,
@@ -479,6 +649,192 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     letterSpacing: 1,
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    width: '100%',
+    justifyContent: 'center',
+    marginTop: 30,
+    maxWidth: 400,
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    borderRadius: 14,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+    minWidth: 120,
+  },
+  primaryButton: {
+    backgroundColor: '#FFD700',
+    flex: 2,
+  },
+  secondaryButton: {
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.3)',
+    flex: 1,
+  },
+  buttonIcon: {
+    marginRight: 8,
+  },
+  buttonIconRight: {
+    marginLeft: 8,
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: '600' as const,
+    letterSpacing: 0.5,
+  },
+  primaryButtonText: {
+    color: '#000',
+  },
+  secondaryButtonText: {
+    color: '#fff',
+  },
+  modernInputContainer: {
+    width: '100%',
+    marginBottom: 20,
+  },
+  modernInputStyle: {
+    marginBottom: 0,
+  },
+  modernLocationButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  modernLocationButtonText: {
+    fontSize: 16,
+    fontWeight: '500' as const,
+    color: '#1A1A1A',
+    flex: 1,
+    marginLeft: 12,
+  },
+  countryCodeContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 20,
+  },
+  countryCodeButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  countryCodeButtonActive: {
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderColor: '#000000',
+    borderWidth: 2,
+  },
+  countryCodeEmoji: {
+    fontSize: 18,
+    marginRight: 8,
+  },
+  countryCodeText: {
+    fontSize: 14,
+    fontWeight: '500' as const,
+    color: '#fff',
+  },
+  countryCodeTextActive: {
+    color: '#000000',
+    fontWeight: '700' as const,
+  },
+  phoneCodePrefix: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    borderRadius: 6,
+    marginRight: 8,
+  },
+  phonePrefixText: {
+    fontSize: 12,
+    fontWeight: '600' as const,
+    color: '#333',
+  },
+  servicesContainer: {
+    width: '100%',
+    maxHeight: 300,
+    marginBottom: 20,
+  },
+  serviceItem: {
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  serviceItemSelected: {
+    backgroundColor: 'rgba(255,215,0,0.9)',
+    borderColor: '#000',
+    borderWidth: 2,
+  },
+  serviceText: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: '500' as const,
+    flex: 1,
+  },
+  serviceTextSelected: {
+    color: '#000',
+    fontWeight: '600' as const,
+  },
+  mapControls: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    padding: 20,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
+  },
+  mapButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 12,
+    gap: 8,
+  },
+  mapCancelButton: {
+    backgroundColor: '#FF3B30',
+  },
+  mapConfirmButton: {
+    backgroundColor: '#34C759',
+  },
+  mapButtonDisabled: {
+    backgroundColor: '#E0E0E0',
+  },
+  mapButtonText: {
+    fontSize: 16,
+    fontWeight: '600' as const,
+    color: '#fff',
+  },
+  // Legacy styles for backward compatibility
   inputContainer: {
     flexDirection: 'column',
     alignItems: 'center',
@@ -507,60 +863,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     backgroundColor: 'transparent',
   },
-  errorText: {
-    color: '#FF0000',
-    fontSize: 15,
-    marginBottom: 10,
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
-  servicesContainer: {
-    width: '85%',
-    maxHeight: 300,
-    marginBottom: 20,
-  },
-  serviceItem: {
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#FFD700',
-  },
-  serviceItemSelected: {
-    backgroundColor: '#FFD700',
-    borderColor: '#1A1A1A',
-  },
-  serviceText: {
-    fontSize: 16,
-    color: '#1A1A1A',
-    fontWeight: '600',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    gap: 15,
-    width: '85%',
-    justifyContent: 'center',
-    marginTop: 20,
-  },
-  button: {
-    flex: 1,
-    backgroundColor: '#FFD700',
-    paddingVertical: 15,
-    borderRadius: 25,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  buttonText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1A1A1A',
-    letterSpacing: 1,
-  },
   locationButton: {
     backgroundColor: '#FFD700',
     padding: 10,
@@ -570,100 +872,7 @@ const styles = StyleSheet.create({
   locationButtonText: {
     color: '#1A1A1A',
     fontSize: 16,
-    fontWeight: '700',
-  },
-  languageButton: {
-    position: 'absolute',
-    top: 40,
-    right: 30,
-    backgroundColor: 'rgba(255,255,255,0.7)',
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    borderRadius: 16,
-    zIndex: 10,
-  },
-  languageButtonText: {
-    color: '#1A1A1A',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  modernInputContainer: {
-    width: '90%',
-    marginBottom: 16,
-  },
-  modernInputStyle: {
-    marginBottom: 0,
-  },
-  modernLocationButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    marginBottom: 16,
-    width: '90%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  modernLocationButtonText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#1A1A1A',
-    flex: 1,
-    marginLeft: 12,
-  },
-  countryCodeContainer: {
-    flexDirection: 'row',
-    width: '90%',
-    gap: 12,
-    marginBottom: 16,
-  },
-  countryCodeButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-  },
-  countryCodeButtonActive: {
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderColor: '#000000',
-    borderWidth: 2,
-  },
-  countryCodeEmoji: {
-    fontSize: 18,
-    marginRight: 8,
-  },
-  countryCodeText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#666',
-  },
-  countryCodeTextActive: {
-    color: '#000000',
-    fontWeight: '700',
-  },
-  phoneCodePrefix: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    backgroundColor: 'rgba(0, 0, 0, 0.05)',
-    borderRadius: 6,
-    marginRight: 8,
-  },
-  phonePrefixText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#333',
+    fontWeight: '700' as const,
   },
 });
 

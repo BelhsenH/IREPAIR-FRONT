@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  Alert,
-  TouchableOpacity,
-  TextInput,
-  KeyboardAvoidingView,
-  Platform,
-  Animated
-} from 'react-native';
-import { Text, Card, ProgressBar, Chip } from 'react-native-paper';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useLanguage } from '../../../../contexts/LanguageContext';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  Alert,
+  Animated,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native';
+import { Chip, ProgressBar, Text } from 'react-native-paper';
+import { useLanguage } from '../../../../contexts/LanguageContext';
 import { maintenanceCarStateAPI, MaintenanceCarStateData } from '../../../../services/maintenanceCarStateAPI';
 
 // Professional color palette for mechanics
@@ -129,7 +129,7 @@ export default function IRepairMaintenanceCarStateForm() {
   const [showDatePicker, setShowDatePicker] = useState<string | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [completedFields, setCompletedFields] = useState(0);
-  const [totalFields] = useState(16);
+  const [totalFields, setTotalFields] = useState(0);
   const animatedValue = useState(new Animated.Value(0))[0];
 
   // Check if we're editing existing data
@@ -142,24 +142,12 @@ export default function IRepairMaintenanceCarStateForm() {
     }).start();
   }, [carId, maintenanceRequestId]);
 
-  // Calculate completion progress
-  useEffect(() => {
-    const filled = Object.keys(formData).filter(key => {
-      const value = formData[key];
-      if (typeof value === 'object' && value !== null) {
-        return Object.values(value).some(v => v !== null && v !== undefined && v !== '');
-      }
-      return value !== null && value !== undefined && value !== '';
-    }).length;
-    setCompletedFields(filled);
-  }, [formData]);
-
   const loadExistingData = async () => {
     try {
       setLoading(true);
       const response = await maintenanceCarStateAPI.getMaintenanceCarState(carId as string, maintenanceRequestId as string);
       if (response.success) {
-        setFormData(response.data);
+        setFormData(response.data || {});
         setIsEditMode(true);
       } else {
         if (response.message?.includes('Access denied')) {
@@ -181,14 +169,14 @@ export default function IRepairMaintenanceCarStateForm() {
         }
       }
     } catch (error) {
-      console.log('No existing data found, creating new state');
+      console.log('No existing data found, creating new state', error);
       setIsEditMode(false);
     } finally {
       setLoading(false);
     }
   };
 
-  const formSections: FormSection[] = [
+  const formSections: FormSection[] = useMemo(() => [
     {
       title: language === 'ar' ? 'معلومات عامة' : language === 'fr' ? 'Informations générales' : 'General Information',
       icon: 'info',
@@ -327,7 +315,46 @@ export default function IRepairMaintenanceCarStateForm() {
         }
       ]
     }
-  ];
+  ], [language]);
+
+  const getFieldValue = useCallback((key: string) => {
+    const keys = key.split('.');
+    let value: any = formData;
+    for (const k of keys) {
+      value = value?.[k];
+    }
+    return value || '';
+  }, [formData]);
+
+  // Calculate total fields from formSections
+  useEffect(() => {
+    const total = formSections.reduce((acc, section) => acc + section.fields.length, 0) + 3; // +3 for additional notes
+    setTotalFields(Math.max(total, 1)); // Ensure totalFields is never 0
+  }, [formSections]);
+
+  // Calculate completion progress
+  useEffect(() => {
+    // Get all field keys from formSections
+    const allFieldKeys: string[] = [];
+    formSections.forEach(section => {
+      section.fields.forEach(field => {
+        allFieldKeys.push(field.key);
+      });
+    });
+    
+    // Add additional notes fields
+    allFieldKeys.push('additionalDetails.recentAccidents');
+    allFieldKeys.push('additionalDetails.customModifications');
+    allFieldKeys.push('additionalDetails.otherNotes');
+
+    // Count how many of these specific fields are filled
+    const filled = allFieldKeys.filter(fieldKey => {
+      const value = getFieldValue(fieldKey);
+      return value !== null && value !== undefined && value !== '';
+    }).length;
+
+    setCompletedFields(Math.max(filled, 0));
+  }, [formData, formSections, getFieldValue]);
 
   const handleInputChange = (key: string, value: any) => {
     const keys = key.split('.');
@@ -345,15 +372,6 @@ export default function IRepairMaintenanceCarStateForm() {
       current[keys[keys.length - 1]] = value;
       return newData;
     });
-  };
-
-  const getFieldValue = (key: string) => {
-    const keys = key.split('.');
-    let value = formData;
-    for (const k of keys) {
-      value = value?.[k];
-    }
-    return value || '';
   };
 
   const formatDate = (date: Date) => {
@@ -396,7 +414,7 @@ export default function IRepairMaintenanceCarStateForm() {
 
   const renderField = (field: FormField) => {
     const value = getFieldValue(field.key);
-    const hasValue = value !== null && value !== undefined && value !== '';
+    const hasValue = value !== null && value !== undefined && value !== '' && value !== 0;
     
     switch (field.type) {
       case 'text':
@@ -409,7 +427,7 @@ export default function IRepairMaintenanceCarStateForm() {
             )}
             <TextInput
               style={[styles.input, field.icon && styles.inputWithIcon, hasValue && styles.inputFilled]}
-              value={value as string}
+              value={String(value || '')}
               onChangeText={(text) => handleInputChange(field.key, text)}
               placeholder={field.label}
               placeholderTextColor={Theme.colors.textSecondary}
@@ -429,7 +447,10 @@ export default function IRepairMaintenanceCarStateForm() {
               <TextInput
                 style={[styles.input, { flex: 1 }, hasValue && styles.inputFilled]}
                 value={value?.toString() || ''}
-                onChangeText={(text) => handleInputChange(field.key, text ? parseFloat(text) : undefined)}
+                onChangeText={(text) => {
+                  const numValue = parseFloat(text);
+                  handleInputChange(field.key, text ? (isNaN(numValue) ? undefined : numValue) : undefined);
+                }}
                 placeholder={field.label}
                 placeholderTextColor={Theme.colors.textSecondary}
                 keyboardType="numeric"
@@ -456,7 +477,7 @@ export default function IRepairMaintenanceCarStateForm() {
               onPress={() => setShowDatePicker(field.key)}
             >
               <Text style={[styles.dateText, !value && styles.placeholderText]}>
-                {value ? new Date(value).toLocaleDateString() : field.label}
+                {value && typeof value === 'string' ? new Date(value).toLocaleDateString() : field.label}
               </Text>
               <View style={styles.dateIcon}>
                 <Ionicons name="calendar-outline" size={20} color={hasValue ? Theme.colors.primary : Theme.colors.textSecondary} />
@@ -465,7 +486,7 @@ export default function IRepairMaintenanceCarStateForm() {
             
             {showDatePicker === field.key && (
               <DateTimePicker
-                value={value ? parseDate(value as string) : new Date()}
+                value={value && typeof value === 'string' ? parseDate(value) : new Date()}
                 mode="date"
                 display="default"
                 onChange={(_, selectedDate) => {
@@ -548,10 +569,10 @@ export default function IRepairMaintenanceCarStateForm() {
           </Text>
           <View style={styles.progressContainer}>
             <Text style={styles.progressText}>
-              {Math.round((completedFields / totalFields) * 100)}% {language === 'ar' ? 'مكتمل' : language === 'fr' ? 'terminé' : 'complete'}
+              {Math.round(((completedFields && totalFields) ? (completedFields / totalFields) * 100 : 0))}% {language === 'ar' ? 'مكتمل' : language === 'fr' ? 'terminé' : 'complete'}
             </Text>
             <ProgressBar 
-              progress={completedFields / totalFields} 
+              progress={isNaN(completedFields / totalFields) ? 0 : Math.min(Math.max(completedFields / totalFields, 0), 1)} 
               color={Theme.colors.accent}
               style={styles.progressBar}
             />

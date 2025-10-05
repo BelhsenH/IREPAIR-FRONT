@@ -53,7 +53,9 @@ export const AuthColors = {
   inputBackground: '#FFFFFF',
   inputBorder: '#E0E0E0',
   inputBorderFocus: '#000000',
-  inputPlaceholder: '#999999',
+  inputPlaceholder: '#A0A0A0',
+  inputLabel: '#666666',
+  inputLabelFocus: '#000000',
   
   // Button Colors
   buttonPrimary: '#000000',
