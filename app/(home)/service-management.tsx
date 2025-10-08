@@ -1,22 +1,22 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
   ActivityIndicator,
-  RefreshControl,
+  Alert,
   Modal,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context'; // <-- Add this import
-import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import { useLanguage } from '../../contexts/LanguageContext';
-import { Colors, Typography, Spacing, BorderRadius, Shadows } from '../../constants/Theme';
 import { ModernButton } from '../../components/modern/ModernButton';
+import { BorderRadius, Colors, Shadows, Spacing, Typography } from '../../constants/Theme';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { serviceAPI } from '../../scripts/service-script';
 
 const Theme = {
@@ -102,7 +102,7 @@ const statusTranslations: Record<string, Record<string, string>> = {
     installing: 'Installation des pièces',
     ready_to_drop: 'Prêt pour récupération',
     completed: 'Terminé',
-    cancelled: 'Annulé',
+    cancelled: 'Réfusé',
   },
   ar: {
     pending: 'في انتظار المراجعة',

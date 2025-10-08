@@ -115,7 +115,6 @@ interface FormField {
   required?: boolean;
   options?: string[];
   unit?: string;
-  icon?: string;
 }
 
 export default function IRepairMaintenanceCarStateForm() {
@@ -186,8 +185,7 @@ export default function IRepairMaintenanceCarStateForm() {
           key: 'currentMileage',
           label: language === 'ar' ? 'المسافة الحالية' : language === 'fr' ? 'Kilométrage actuel' : 'Current Mileage',
           type: 'number',
-          unit: 'km',
-          icon: 'speedometer'
+          unit: 'km'
         }
       ]
     },
@@ -198,36 +196,31 @@ export default function IRepairMaintenanceCarStateForm() {
       fields: [
         {
           key: 'engineOil.lastChangeKm',
-          label: language === 'ar' ? 'آخر تغيير زيت المحرك (كم)' : language === 'fr' ? 'Dernier changement huile (km)' : 'Last Oil Change (km)',
+          label: language === 'ar' ? 'آخر تغيير زيت المحرك (كم)' : language === 'fr' ? 'Dernier changement huile' : 'Last Oil Change (km)',
           type: 'number',
-          unit: 'km',
-          icon: 'speedometer'
+          unit: 'km'
         },
         {
           key: 'engineOil.lastChangeDate',
           label: language === 'ar' ? 'تاريخ آخر تغيير زيت' : language === 'fr' ? 'Date dernier changement' : 'Last Oil Change Date',
-          type: 'date',
-          icon: 'calendar'
+          type: 'date'
         },
         {
           key: 'engineOil.oilType',
           label: language === 'ar' ? 'نوع الزيت' : language === 'fr' ? 'Type d\'huile' : 'Oil Type',
           type: 'select',
-          options: ['5W-30 synthetic', '5W-40 synthetic', '10W-40 semi-synthetic', '15W-40 mineral', 'Other'],
-          icon: 'water-drop'
+          options: ['5W-30 synthetic', '5W-40 synthetic', '10W-40 semi-synthetic', '15W-40 mineral', 'Other']
         },
         {
           key: 'oilFilter.lastChangeKm',
           label: language === 'ar' ? 'آخر تغيير فلتر زيت (كم)' : language === 'fr' ? 'Dernier changement filtre (km)' : 'Last Oil Filter Change (km)',
           type: 'number',
-          unit: 'km',
-          icon: 'filter-alt'
+          unit: 'km'
         },
         {
           key: 'oilFilter.lastChangeDate',
           label: language === 'ar' ? 'تاريخ آخر تغيير فلتر زيت' : language === 'fr' ? 'Date changement filtre' : 'Last Oil Filter Change Date',
-          type: 'date',
-          icon: 'calendar'
+          type: 'date'
         }
       ]
     },
@@ -239,20 +232,17 @@ export default function IRepairMaintenanceCarStateForm() {
         {
           key: 'coolantAntifreeze.lastReplacementDate',
           label: language === 'ar' ? 'آخر تغيير سائل التبريد' : language === 'fr' ? 'Dernier changement liquide de refroidissement' : 'Last Coolant Change',
-          type: 'date',
-          icon: 'ac-unit'
+          type: 'date'
         },
         {
           key: 'brakeFluid.lastChangeDate',
           label: language === 'ar' ? 'آخر تغيير سائل الفرامل' : language === 'fr' ? 'Dernier changement liquide de frein' : 'Last Brake Fluid Change',
-          type: 'date',
-          icon: 'pan-tool'
+          type: 'date'
         },
         {
           key: 'transmissionFluid.lastChangeDate',
           label: language === 'ar' ? 'آخر تغيير زيت القير' : language === 'fr' ? 'Dernier changement huile de transmission' : 'Last Transmission Fluid Change',
-          type: 'date',
-          icon: 'settings'
+          type: 'date'
         }
       ]
     },
@@ -265,33 +255,28 @@ export default function IRepairMaintenanceCarStateForm() {
           key: 'tirePressure.frontPSI',
           label: language === 'ar' ? 'ضغط الإطارات الأمامية' : language === 'fr' ? 'Pression pneus avant' : 'Front Tire Pressure',
           type: 'number',
-          unit: 'PSI',
-          icon: 'speed'
+          unit: 'PSI'
         },
         {
           key: 'tirePressure.rearPSI',
           label: language === 'ar' ? 'ضغط الإطارات الخلفية' : language === 'fr' ? 'Pression pneus arrière' : 'Rear Tire Pressure',
           type: 'number',
-          unit: 'PSI',
-          icon: 'speed'
+          unit: 'PSI'
         },
         {
           key: 'tirePressure.lastCheckDate',
           label: language === 'ar' ? 'آخر فحص ضغط الإطارات' : language === 'fr' ? 'Dernière vérification pression' : 'Last Pressure Check',
-          type: 'date',
-          icon: 'calendar'
+          type: 'date'
         },
         {
           key: 'brakePads.front.lastReplacementDate',
           label: language === 'ar' ? 'آخر تغيير فحمات الفرامل الأمامية' : language === 'fr' ? 'Dernier changement plaquettes avant' : 'Last Front Brake Pads Change',
-          type: 'date',
-          icon: 'stop'
+          type: 'date'
         },
         {
           key: 'brakePads.rear.lastReplacementDate',
           label: language === 'ar' ? 'آخر تغيير فحمات الفرامل الخلفية' : language === 'fr' ? 'Dernier changement plaquettes arrière' : 'Last Rear Brake Pads Change',
-          type: 'date',
-          icon: 'stop'
+          type: 'date'
         }
       ]
     },
@@ -303,15 +288,13 @@ export default function IRepairMaintenanceCarStateForm() {
         {
           key: 'battery12V.installDate',
           label: language === 'ar' ? 'تاريخ تركيب البطارية' : language === 'fr' ? 'Date installation batterie' : 'Battery Install Date',
-          type: 'date',
-          icon: 'calendar'
+          type: 'date'
         },
         {
           key: 'battery12V.lastVoltage',
           label: language === 'ar' ? 'آخر قراءة جهد' : language === 'fr' ? 'Dernière lecture tension' : 'Last Voltage Reading',
           type: 'number',
-          unit: 'V',
-          icon: 'flash-on'
+          unit: 'V'
         }
       ]
     }
@@ -420,13 +403,8 @@ export default function IRepairMaintenanceCarStateForm() {
       case 'text':
         return (
           <View style={styles.inputContainer}>
-            {field.icon && (
-              <View style={styles.inputIcon}>
-                <Ionicons name={field.icon as any} size={20} color={hasValue ? Theme.colors.primary : Theme.colors.textSecondary} />
-              </View>
-            )}
             <TextInput
-              style={[styles.input, field.icon && styles.inputWithIcon, hasValue && styles.inputFilled]}
+              style={[styles.input, hasValue && styles.inputFilled]}
               value={String(value || '')}
               onChangeText={(text) => handleInputChange(field.key, text)}
               placeholder={field.label}
@@ -438,14 +416,9 @@ export default function IRepairMaintenanceCarStateForm() {
       case 'number':
         return (
           <View style={styles.inputContainer}>
-            {field.icon && (
-              <View style={styles.inputIcon}>
-                <Ionicons name={field.icon as any} size={20} color={hasValue ? Theme.colors.primary : Theme.colors.textSecondary} />
-              </View>
-            )}
-            <View style={[styles.inputWithUnit, field.icon && { marginLeft: 40 }]}>
+            <View style={styles.inputWithUnit}>
               <TextInput
-                style={[styles.input, { flex: 1 }, hasValue && styles.inputFilled]}
+                style={[styles.input, styles.numberInput, hasValue && styles.inputFilled]}
                 value={value?.toString() || ''}
                 onChangeText={(text) => {
                   const numValue = parseFloat(text);
@@ -467,13 +440,8 @@ export default function IRepairMaintenanceCarStateForm() {
       case 'date':
         return (
           <View style={styles.inputContainer}>
-            {field.icon && (
-              <View style={styles.inputIcon}>
-                <Ionicons name={field.icon as any} size={20} color={hasValue ? Theme.colors.primary : Theme.colors.textSecondary} />
-              </View>
-            )}
             <TouchableOpacity
-              style={[styles.dateInput, field.icon && styles.inputWithIcon, hasValue && styles.inputFilled]}
+              style={[styles.dateInput, hasValue && styles.inputFilled]}
               onPress={() => setShowDatePicker(field.key)}
             >
               <Text style={[styles.dateText, !value && styles.placeholderText]}>
@@ -805,12 +773,6 @@ const styles = StyleSheet.create({
   inputContainer: {
     position: 'relative',
   },
-  inputIcon: {
-    position: 'absolute',
-    left: 15,
-    top: 15,
-    zIndex: 1,
-  },
   input: {
     borderWidth: 2,
     borderColor: Theme.colors.textLight,
@@ -820,16 +782,19 @@ const styles = StyleSheet.create({
     color: Theme.colors.text,
     backgroundColor: Theme.colors.surface,
   },
-  inputWithIcon: {
-    paddingLeft: 50,
-  },
   inputFilled: {
     borderColor: Theme.colors.primary,
     backgroundColor: Theme.colors.white,
   },
+  numberInput: {
+    flex: 1,
+    marginRight: 0,
+    paddingVertical: 18,
+  },
   inputWithUnit: {
     flexDirection: 'row',
     alignItems: 'center',
+    width: '100%',
   },
   unitContainer: {
     backgroundColor: Theme.colors.primary + '10',
@@ -837,6 +802,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     marginLeft: 10,
+    minWidth: 50,
+    alignItems: 'center',
   },
   unitLabel: {
     fontSize: 14,
