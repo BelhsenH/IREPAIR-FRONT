@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
   ActivityIndicator,
-  RefreshControl,
   Alert,
   Image,
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import tw from 'twrnc';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -367,7 +367,7 @@ const PartsRequestsScreen = () => {
       </View>
 
       {/* Status Filter */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={tw`p-4 max-h-16`}>
+      {/*<ScrollView horizontal showsHorizontalScrollIndicator={false} style={tw`p-4 max-h-16`}>
         <View style={tw`flex-row gap-2`}>
           {statusFilters.map((filter) => (
             <TouchableOpacity
@@ -396,7 +396,7 @@ const PartsRequestsScreen = () => {
             </TouchableOpacity>
           ))}
         </View>
-      </ScrollView>
+      </ScrollView> */}
 
       {/* Content */}
       {loading ? (

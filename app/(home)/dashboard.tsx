@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert,  StatusBar, Platform, Dimensions, Image } from 'react-native';
-import { useLanguage } from '../../contexts/LanguageContext';
-import { useAuth } from '../../contexts/AuthContext';
-import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { router } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { Alert, Dimensions, Image, Platform, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuth } from '../../contexts/AuthContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 // Professional color palette for mechanics
 const Colors = {
@@ -222,7 +222,7 @@ const Dashboard = () => {
             
           
             
-            <TouchableOpacity style={styles.sidebarItem} onPress={() => router.push('/(home)/messages')}>
+            <TouchableOpacity style={styles.sidebarItem} onPress={() => router.push('/(home)/conversations-optimized')}>
               <View style={styles.sidebarIconContainer}>
                 <Ionicons name="chatbubbles" size={22} color={Colors.secondary} />
               </View>
