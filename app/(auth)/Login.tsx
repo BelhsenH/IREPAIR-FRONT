@@ -1,14 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { Dimensions, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { ModernInput } from '../../components/modern/ModernInput';
+import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { authService } from '../../scripts/auth-script';
-
-const { width } = Dimensions.get('window');
 
 const countryCodes = [
   { code: '+213', flag: '🇩🇿' },
@@ -17,6 +15,7 @@ const countryCodes = [
 
 const LoginScreen = () => {
   const { language, translations, toggleLanguage } = useLanguage();
+  const { login } = useAuth();
   const [countryCode, setCountryCode] = useState('+213');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
@@ -44,7 +43,19 @@ const LoginScreen = () => {
       console.log('Login response:', response);
       
       if (response.success && response.data) {
-        await AsyncStorage.setItem('@user_data', JSON.stringify(response.data.user));
+        // Use AuthContext to properly store token and user
+        console.log('🔑 Storing token and user data via AuthContext...');
+        console.log('🔍 User data from response:', response.data.user);
+        
+        // Map the response user to AuthUser format
+        const authUser = {
+          ...response.data.user,
+          // Ensure geolocation exists (required by AuthUser interface)
+          geolocation: (response.data.user as any).geolocation || { lat: 0, lng: 0 }
+        };
+        
+        await login(response.data.token, authUser);
+        console.log('✅ Token and user data stored successfully');
         router.replace('/(home)/dashboard');
       } else {
         const errorMsg = typeof response.error === 'string' ? response.error.toLowerCase() : '';
@@ -97,8 +108,9 @@ const LoginScreen = () => {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
+      enabled={true}
     >
       <View style={styles.container}>
         <Image
@@ -138,8 +150,11 @@ const LoginScreen = () => {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
           bounces={false}
+          keyboardDismissMode="on-drag"
+          automaticallyAdjustKeyboardInsets={Platform.OS === 'ios'}
         >
-          <View style={styles.content}>
+          <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+            <View style={styles.content}>
             {/* Header Section */}
             <View style={styles.headerSection}>
               <View style={styles.logoContainer}>
@@ -271,6 +286,7 @@ const LoginScreen = () => {
               </View>
             </View>
           </View>
+          </TouchableWithoutFeedback>
         </ScrollView>
       </View>
     </KeyboardAvoidingView>
@@ -336,13 +352,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 40,
     zIndex: 2,
-    minHeight: Dimensions.get('window').height - 100,
     justifyContent: 'center',
   },
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'center',
-    minHeight: Dimensions.get('window').height - 100,
+    paddingTop: 100,
+    paddingBottom: 50,
   },
   headerSection: {
     alignItems: 'center',

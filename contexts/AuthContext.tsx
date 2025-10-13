@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { authService } from '../scripts/auth-script';
 
 interface AuthUser {
@@ -44,25 +44,45 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Debug token changes
+  useEffect(() => {
+    console.log('🔐 AuthContext: Token changed to:', token ? 'TOKEN_EXISTS' : 'NULL');
+  }, [token]);
+
+  // Debug user changes
+  useEffect(() => {
+    console.log('👤 AuthContext: User changed to:', user ? user.nomResponsable : 'NULL');
+  }, [user]);
+
   // Load stored auth data on app start
   useEffect(() => {
     loadStoredAuth();
   }, []);
 
   const loadStoredAuth = async () => {
+    console.log('🔄 AuthContext: Loading stored auth...');
+    
     try {
       const [storedToken, storedUser] = await Promise.all([
         AsyncStorage.getItem(TOKEN_KEY),
         AsyncStorage.getItem(USER_KEY),
       ]);
 
+      console.log('🔄 Stored token exists:', !!storedToken);
+      console.log('🔄 Stored user exists:', !!storedUser);
+
       if (storedToken && storedUser) {
+        console.log('🔄 Setting stored auth data...');
         setToken(storedToken);
         setUser(JSON.parse(storedUser));
+        console.log('✅ Stored auth data loaded successfully');
+      } else {
+        console.log('⚠️ No stored auth data found');
       }
     } catch (error) {
-      console.error('Error loading stored auth:', error);
+      console.error('❌ Error loading stored auth:', error);
     } finally {
+      console.log('🔄 AuthContext loading complete, isLoading set to false');
       setIsLoading(false);
     }
   };
@@ -80,16 +100,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const login = async (newToken: string, newUser: AuthUser) => {
+    console.log('🔐 AuthContext.login called with token:', newToken?.substring(0, 20) + '...');
+    console.log('🔐 AuthContext.login called with user:', newUser?.nomResponsable);
+    
     try {
+      console.log('🔐 Storing token and user in AsyncStorage...');
       await Promise.all([
         AsyncStorage.setItem(TOKEN_KEY, newToken),
         AsyncStorage.setItem(USER_KEY, JSON.stringify(newUser)),
       ]);
       
+      console.log('🔐 Setting token and user in state...');
       setToken(newToken);
       setUser(newUser);
+      console.log('✅ AuthContext.login completed successfully');
     } catch (error) {
-      console.error('Error storing auth data:', error);
+      console.error('❌ Error storing auth data:', error);
       throw error;
     }
   };

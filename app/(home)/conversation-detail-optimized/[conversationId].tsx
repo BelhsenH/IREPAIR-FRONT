@@ -1,24 +1,21 @@
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { Audio } from 'expo-av';
-import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    Animated,
-    Dimensions,
-    FlatList,
-    Image,
-    InteractionManager,
-    KeyboardAvoidingView,
-    Platform,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  Animated,
+  Dimensions,
+  FlatList,
+  InteractionManager,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -84,11 +81,10 @@ interface MessageItemProps {
   item: Message;
   isFromCurrentUser: boolean;
   showSender: boolean;
-  onImagePress?: (imageUri: string) => void;
 }
 
 // Optimized message component with distinct UI for sent/received
-const MessageItem = React.memo<MessageItemProps>(({ item, isFromCurrentUser, showSender, onImagePress }) => {
+const MessageItem = React.memo<MessageItemProps>(({ item, isFromCurrentUser, showSender }) => {
   const animatedValue = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -124,38 +120,7 @@ const MessageItem = React.memo<MessageItemProps>(({ item, isFromCurrentUser, sho
         </Text>
       )}
 
-      {item.images && item.images.length > 0 && (
-        <View style={styles.imagesContainer}>
-          {item.images.map((imageUri: string, index: number) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() => onImagePress?.(imageUri)}
-              style={styles.imageWrapper}
-            >
-              <Image source={{ uri: imageUri }} style={styles.messageImage} />
-            </TouchableOpacity>
-          ))}
-        </View>
-      )}
 
-      {item.voiceMessage && (
-        <TouchableOpacity style={[
-          styles.voiceMessageContainer,
-          isFromCurrentUser ? styles.sentVoiceMessage : styles.receivedVoiceMessage
-        ]}>
-          <Ionicons 
-            name="play" 
-            size={20} 
-            color={isFromCurrentUser ? Colors.sentText : Colors.primary} 
-          />
-          <Text style={[
-            styles.voiceMessageText,
-            isFromCurrentUser ? styles.sentText : styles.receivedText
-          ]}>
-            {Math.floor(item.voiceMessage.duration / 60)}:{String(item.voiceMessage.duration % 60).padStart(2, '0')}
-          </Text>
-        </TouchableOpacity>
-      )}
 
       <View style={[
         styles.messageFooter,
@@ -179,7 +144,7 @@ const MessageItem = React.memo<MessageItemProps>(({ item, isFromCurrentUser, sho
         )}
       </View>
     </View>
-  ), [item, isFromCurrentUser, showSender, formatTime, onImagePress]);
+  ), [item, isFromCurrentUser, showSender, formatTime]);
 
   return (
     <Animated.View 
@@ -275,12 +240,8 @@ const OptimizedConversationDetailScreen = () => {
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
-  const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
-  const [recording, setRecording] = useState<Audio.Recording | null>(null);
-  const [voiceMessage, setVoiceMessage] = useState<{ uri: string; duration: number } | null>(null);
   const [typingUsers, setTypingUsers] = useState<Set<string>>(new Set());
   const [isTyping, setIsTyping] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -406,17 +367,13 @@ const OptimizedConversationDetailScreen = () => {
 
   // Optimized send message
   const sendMessage = useCallback(async () => {
-    if (!newMessage.trim() && selectedImages.length === 0 && !voiceMessage) return;
+    if (!newMessage.trim()) return;
     if (!conversationId || !token || sending) return;
 
     const messageText = newMessage.trim();
-    const imagesToSend = [...selectedImages];
-    const voiceToSend = voiceMessage;
 
     // Clear inputs immediately for better UX
     setNewMessage('');
-    setSelectedImages([]);
-    setVoiceMessage(null);
     setIsTyping(false);
 
     // Clear typing timeout
@@ -427,21 +384,10 @@ const OptimizedConversationDetailScreen = () => {
     setSending(true);
     
     try {
-      let imageUrls: string[] = [];
-      
-      if (imagesToSend.length > 0) {
-        const imageObjects = imagesToSend.map((uri, index) => ({
-          uri,
-          type: 'image/jpeg',
-          name: `image_${index}.jpg`
-        }));
-        imageUrls = await ConversationService.uploadImages(imageObjects);
-      }
-
       const sentMessage = await ConversationService.sendMessage(
         conversationId,
-        messageText || (voiceToSend ? '🎤 Voice message' : ''),
-        imageUrls
+        messageText,
+        []
       );
 
       // Add message to local state
@@ -458,86 +404,12 @@ const OptimizedConversationDetailScreen = () => {
       
       // Restore inputs on error
       setNewMessage(messageText);
-      setSelectedImages(imagesToSend);
-      setVoiceMessage(voiceToSend);
     } finally {
       setSending(false);
     }
-  }, [newMessage, selectedImages, voiceMessage, conversationId, token, sending]);
+  }, [newMessage, conversationId, token, sending]);
 
-  // Image picker
-  const pickImages = useCallback(async () => {
-    if (selectedImages.length >= 3) {
-      Alert.alert('Limit reached', 'You can only add up to 3 images per message');
-      return;
-    }
 
-    try {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permission required', 'We need your permission to access photos');
-        return;
-      }
-
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
-        allowsMultipleSelection: true,
-        selectionLimit: 3 - selectedImages.length,
-        quality: 0.8,
-        exif: false,
-      });
-
-      if (!result.canceled && result.assets) {
-        const newImageUris = result.assets.map(asset => asset.uri);
-        setSelectedImages(prev => [...prev, ...newImageUris]);
-      }
-    } catch (error) {
-      console.error('Error picking images:', error);
-      Alert.alert('Error', 'Unable to select images');
-    }
-  }, [selectedImages.length]);
-
-  // Voice recording
-  const startRecording = useCallback(async () => {
-    try {
-      const { status } = await Audio.requestPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permission required', 'We need your permission to record audio');
-        return;
-      }
-
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true,
-        playsInSilentModeIOS: true,
-      });
-
-      const { recording } = await Audio.Recording.createAsync(
-        Audio.RecordingOptionsPresets.HIGH_QUALITY
-      );
-      setRecording(recording);
-      setIsRecording(true);
-    } catch (err) {
-      console.error('Failed to start recording', err);
-      Alert.alert('Error', 'Unable to start recording');
-    }
-  }, []);
-
-  const stopRecording = useCallback(async () => {
-    if (!recording) return;
-
-    setIsRecording(false);
-    await recording.stopAndUnloadAsync();
-    
-    const uri = recording.getURI();
-    const status = await recording.getStatusAsync();
-    
-    if (uri) {
-      const duration = status.durationMillis ? Math.floor(status.durationMillis / 1000) : 0;
-      setVoiceMessage({ uri, duration });
-    }
-    
-    setRecording(null);
-  }, [recording]);
 
   // Optimized render functions
   const renderMessage = useCallback(({ item, index }: { item: Message; index: number }) => {
@@ -632,14 +504,14 @@ const OptimizedConversationDetailScreen = () => {
             </Text>
           </View>
 
-          <View style={styles.headerActions}>
+         {/* <View style={styles.headerActions}>
             <TouchableOpacity style={styles.headerButton}>
               <Ionicons name="call" size={20} color="white" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.headerButton}>
               <Ionicons name="videocam" size={20} color="white" />
             </TouchableOpacity>
-          </View>
+          </View>*/}
         </LinearGradient>
 
         {/* Messages List */}
@@ -668,83 +540,20 @@ const OptimizedConversationDetailScreen = () => {
           }}
         />
 
-        {/* Selected Images Preview */}
-        {selectedImages.length > 0 && (
-          <View style={styles.selectedImagesContainer}>
-            <FlatList
-              data={selectedImages}
-              horizontal
-              renderItem={({ item, index }) => (
-                <View style={styles.selectedImageWrapper}>
-                  <Image source={{ uri: item }} style={styles.selectedImage} />
-                  <TouchableOpacity 
-                    style={styles.removeImageButton}
-                    onPress={() => setSelectedImages(prev => prev.filter((_, i) => i !== index))}
-                  >
-                    <Ionicons name="close" size={16} color="white" />
-                  </TouchableOpacity>
-                </View>
-              )}
-              keyExtractor={(_, index) => index.toString()}
-              contentContainerStyle={styles.selectedImagesList}
-              showsHorizontalScrollIndicator={false}
-            />
-          </View>
-        )}
 
-        {/* Voice Message Preview */}
-        {voiceMessage && (
-          <View style={styles.voicePreviewContainer}>
-            <View style={styles.voicePreview}>
-              <Ionicons name="mic" size={20} color={Colors.primary} />
-              <Text style={styles.voicePreviewText}>
-                Voice message ({Math.floor(voiceMessage.duration / 60)}:{String(voiceMessage.duration % 60).padStart(2, '0')})
-              </Text>
-              <TouchableOpacity 
-                style={styles.removeVoiceButton}
-                onPress={() => setVoiceMessage(null)}
-              >
-                <Ionicons name="close" size={16} color={Colors.error} />
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
+
+
 
         {/* Input Container */}
         <View style={styles.inputContainer}>
-          <TouchableOpacity 
-            style={[styles.actionButton, (selectedImages.length > 0 || voiceMessage) && styles.actionButtonDisabled]} 
-            onPress={isRecording ? stopRecording : startRecording}
-            disabled={selectedImages.length > 0 || voiceMessage !== null}
-          >
-            <Ionicons 
-              name={isRecording ? "stop" : "mic"} 
-              size={24} 
-              color={isRecording ? Colors.error : Colors.primary} 
-            />
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={[styles.actionButton, isRecording && styles.actionButtonDisabled]} 
-            onPress={pickImages}
-            disabled={isRecording || selectedImages.length >= 3}
-          >
-            <Ionicons 
-              name="camera" 
-              size={24} 
-              color={isRecording ? Colors.textLight : Colors.primary} 
-            />
-          </TouchableOpacity>
-          
           <View style={styles.textInputContainer}>
             <TextInput
-              style={[styles.textInput, isRecording && styles.textInputDisabled]}
+              style={styles.textInput}
               placeholder="Type your message..."
               value={newMessage}
               onChangeText={handleTyping}
               multiline
               maxLength={1000}
-              editable={!isRecording}
               placeholderTextColor={Colors.textSecondary}
             />
           </View>
@@ -752,10 +561,10 @@ const OptimizedConversationDetailScreen = () => {
           <TouchableOpacity 
             style={[
               styles.sendButton, 
-              (!newMessage.trim() && selectedImages.length === 0 && !voiceMessage) && styles.sendButtonDisabled
+              !newMessage.trim() && styles.sendButtonDisabled
             ]} 
             onPress={sendMessage}
-            disabled={(!newMessage.trim() && selectedImages.length === 0 && !voiceMessage) || sending}
+            disabled={!newMessage.trim() || sending}
           >
             {sending ? (
               <ActivityIndicator size={20} color="white" />
@@ -766,14 +575,7 @@ const OptimizedConversationDetailScreen = () => {
             )}
           </TouchableOpacity>
         </View>
-        
-        {/* Recording Indicator */}
-        {isRecording && (
-          <View style={styles.recordingIndicator}>
-            <ActivityIndicator size="small" color={Colors.error} />
-            <Text style={styles.recordingText}>Recording...</Text>
-          </View>
-        )}
+
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -929,40 +731,7 @@ const styles = StyleSheet.create({
   messageStatus: {
     marginLeft: Spacing.xs,
   },
-  imagesContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: Spacing.sm,
-    gap: Spacing.xs,
-  },
-  imageWrapper: {
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
-  messageImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 12,
-  },
-  voiceMessageContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: 20,
-    marginTop: Spacing.sm,
-  },
-  sentVoiceMessage: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  receivedVoiceMessage: {
-    backgroundColor: Colors.background,
-  },
-  voiceMessageText: {
-    fontSize: Typography.fontSize.sm,
-    marginLeft: Spacing.sm,
-    fontWeight: Typography.fontWeight.medium,
-  },
+
   typingContainer: {
     alignItems: 'flex-start',
     marginBottom: Spacing.md,
@@ -993,59 +762,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.textSecondary,
     marginHorizontal: 1,
   },
-  selectedImagesContainer: {
-    backgroundColor: Colors.surface,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-    paddingVertical: Spacing.sm,
-  },
-  selectedImagesList: {
-    paddingHorizontal: Spacing.lg,
-  },
-  selectedImageWrapper: {
-    position: 'relative',
-    marginRight: Spacing.sm,
-  },
-  selectedImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 8,
-  },
-  removeImageButton: {
-    position: 'absolute',
-    top: -6,
-    right: -6,
-    backgroundColor: Colors.error,
-    borderRadius: 12,
-    width: 24,
-    height: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  voicePreviewContainer: {
-    backgroundColor: Colors.surface,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-  },
-  voicePreview: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.background,
-    borderRadius: 12,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-  },
-  voicePreviewText: {
-    flex: 1,
-    fontSize: Typography.fontSize.sm,
-    color: Colors.textPrimary,
-    marginHorizontal: Spacing.sm,
-  },
-  removeVoiceButton: {
-    padding: Spacing.xs,
-  },
+
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'flex-end',
@@ -1055,18 +772,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: Colors.border,
   },
-  actionButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: Colors.background,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: Spacing.sm,
-  },
-  actionButtonDisabled: {
-    opacity: 0.5,
-  },
+
   textInputContainer: {
     flex: 1,
     maxHeight: 100,
@@ -1081,9 +787,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
     color: Colors.textPrimary,
   },
-  textInputDisabled: {
-    opacity: 0.5,
-  },
+
   sendButton: {
     width: 44,
     height: 44,
@@ -1099,21 +803,6 @@ const styles = StyleSheet.create({
   },
   sendButtonDisabled: {
     opacity: 0.5,
-  },
-  recordingIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.surface,
-    paddingVertical: Spacing.sm,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-  },
-  recordingText: {
-    color: Colors.error,
-    fontSize: Typography.fontSize.sm,
-    fontWeight: Typography.fontWeight.medium,
-    marginLeft: Spacing.sm,
   },
 });
 

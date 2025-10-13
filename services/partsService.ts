@@ -1,5 +1,6 @@
-import ApiService from './api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import config from '../config';
+import ApiService from './api';
 
 export interface Part {
   _id: string;
@@ -69,12 +70,18 @@ export interface PartsRequest {
   requesterId: string;
   requesterModel: 'User';
   requesterType: 'icar' | 'irepair';
+  partId?: Part | string; // Add partId field
+  partName?: string; // Add partName field
   vehicleInfo?: {
     vin?: string;
     brand?: string;
     model?: string;
     year?: number;
     licensePlate?: string;
+    fuelType?: string; // Add fuelType
+    engineType?: string; // Add engineType
+    color?: string; // Add color
+    kilometrage?: number; // Add kilometrage
   };
   quantity: number;
   status: 'pending' | 'accepted' | 'rejected' | 'completed';
@@ -85,6 +92,13 @@ export interface PartsRequest {
   actualDeliveryDate?: string;
   lastContactedAt?: string;
   conversationId?: string;
+  providerId?: any; // Add providerId field
+  engagementMetrics?: { // Add engagementMetrics
+    totalViews: number;
+    uniqueViewers: number;
+    interestedUsers: number;
+    contactAttempts: number;
+  };
   createdAt?: string;
   updatedAt?: string;
 }
@@ -145,36 +159,63 @@ export interface ConversationMessage {
 
 class PartsService {
   private readonly baseEndpoint = '/api';
+  private pendingRequests: Map<string, Promise<any>> = new Map();
+
+  // Debounce similar requests to prevent multiple identical API calls
+  private async makeRequest<T>(key: string, requestFn: () => Promise<T>): Promise<T> {
+    if (this.pendingRequests.has(key)) {
+      return this.pendingRequests.get(key) as Promise<T>;
+    }
+
+    const promise = requestFn().finally(() => {
+      this.pendingRequests.delete(key);
+    });
+
+    this.pendingRequests.set(key, promise);
+    return promise;
+  }
 
   // Categories endpoints
   async getCategories(): Promise<Category[]> {
-    try {
-      const response = await ApiService.get(`/api/parts/cats`);
-      return response.categories || response;
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-      throw new Error('Failed to fetch categories');
-    }
+    const requestKey = 'getCategories';
+    
+    return this.makeRequest(requestKey, async () => {
+      try {
+        const response = await ApiService.get(`/api/parts/cats`);
+        return response.categories || response;
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        throw new Error('Failed to fetch categories');
+      }
+    });
   }
 
   async getSubCategories(categoryId: string): Promise<SubCategory[]> {
-    try {
-      const response = await ApiService.get(`/api/parts/cats/${categoryId}/subcategories`);
-      return response.subCategories || response;
-    } catch (error) {
-      console.error('Error fetching subcategories:', error);
-      throw new Error('Failed to fetch subcategories');
-    }
+    const requestKey = `getSubCategories_${categoryId}`;
+    
+    return this.makeRequest(requestKey, async () => {
+      try {
+        const response = await ApiService.get(`/api/parts/cats/${categoryId}/subcategories`);
+        return response.subCategories || response;
+      } catch (error) {
+        console.error('Error fetching subcategories:', error);
+        throw new Error('Failed to fetch subcategories');
+      }
+    });
   }
 
   async getItems(subCategoryId: string): Promise<Item[]> {
-    try {
-      const response = await ApiService.get(`/api/parts/cats/subcategories/${subCategoryId}/items`);
-      return response.items || response;
-    } catch (error) {
-      console.error('Error fetching items:', error);
-      throw new Error('Failed to fetch items');
-    }
+    const requestKey = `getItems_${subCategoryId}`;
+    
+    return this.makeRequest(requestKey, async () => {
+      try {
+        const response = await ApiService.get(`/api/parts/cats/subcategories/${subCategoryId}/items`);
+        return response.items || response;
+      } catch (error) {
+        console.error('Error fetching items:', error);
+        throw new Error('Failed to fetch items');
+      }
+    });
   }
 
   // Parts endpoints
@@ -196,43 +237,55 @@ class PartsService {
       pages: number;
     };
   }> {
-    try {
-      const queryParams = new URLSearchParams();
-      if (params) {
-        Object.entries(params).forEach(([key, value]) => {
-          if (value !== undefined && value !== null) {
-            queryParams.append(key, value.toString());
-          }
-        });
+    const requestKey = `getAllParts_${JSON.stringify(params || {})}`;
+    
+    return this.makeRequest(requestKey, async () => {
+      try {
+        const queryParams = new URLSearchParams();
+        if (params) {
+          Object.entries(params).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+              queryParams.append(key, value.toString());
+            }
+          });
+        }
+        
+        const url = `${this.baseEndpoint}/parts/all-parts${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+        const response = await ApiService.get(url);
+        return response;
+      } catch (error) {
+        console.error('Error fetching parts:', error);
+        throw new Error('Failed to fetch parts');
       }
-      
-      const url = `${this.baseEndpoint}/parts/all-parts${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
-      const response = await ApiService.get(url);
-      return response;
-    } catch (error) {
-      console.error('Error fetching parts:', error);
-      throw new Error('Failed to fetch parts');
-    }
+    });
   }
 
   async getPartsByCategory(): Promise<PartCategory[]> {
-    try {
-      const response = await ApiService.get(`${this.baseEndpoint}/parts/categories`);
-      return response;
-    } catch (error) {
-      console.error('Error fetching parts by category:', error);
-      throw new Error('Failed to fetch parts by category');
-    }
+    const requestKey = 'getPartsByCategory';
+    
+    return this.makeRequest(requestKey, async () => {
+      try {
+        const response = await ApiService.get(`${this.baseEndpoint}/parts/categories`);
+        return response;
+      } catch (error) {
+        console.error('Error fetching parts by category:', error);
+        throw new Error('Failed to fetch parts by category');
+      }
+    });
   }
 
   async getPartById(id: string): Promise<Part> {
-    try {
-      const response = await ApiService.get(`${this.baseEndpoint}/parts/part/${id}`);
-      return response;
-    } catch (error) {
-      console.error('Error fetching part:', error);
-      throw new Error('Failed to fetch part');
-    }
+    const requestKey = `getPartById_${id}`;
+    
+    return this.makeRequest(requestKey, async () => {
+      try {
+        const response = await ApiService.get(`${this.baseEndpoint}/parts/part/${id}`);
+        return response;
+      } catch (error) {
+        console.error('Error fetching part:', error);
+        throw new Error('Failed to fetch part');
+      }
+    });
   }
 
   // Parts request endpoints
@@ -294,44 +347,56 @@ class PartsService {
       pages: number;
     };
   }> {
-    try {
-      const queryParams = new URLSearchParams();
-      if (params) {
-        Object.entries(params).forEach(([key, value]) => {
-          if (value !== undefined && value !== null) {
-            queryParams.append(key, value.toString());
-          }
-        });
+    const requestKey = `getUserPartsRequests_${JSON.stringify(params || {})}`;
+    
+    return this.makeRequest(requestKey, async () => {
+      try {
+        const queryParams = new URLSearchParams();
+        if (params) {
+          Object.entries(params).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+              queryParams.append(key, value.toString());
+            }
+          });
+        }
+        
+        const url = `${this.baseEndpoint}/parts/requests/my${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+        const response = await ApiService.get(url);
+        return response;
+      } catch (error) {
+        console.error('Error fetching user parts requests:', error);
+        throw new Error('Failed to fetch user parts requests');
       }
-      
-      const url = `${this.baseEndpoint}/parts/requests/my${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
-      const response = await ApiService.get(url);
-      return response;
-    } catch (error) {
-      console.error('Error fetching user parts requests:', error);
-      throw new Error('Failed to fetch user parts requests');
-    }
+    });
   }
 
   // Conversation endpoints
   async getConversations(): Promise<Conversation[]> {
-    try {
-      const response = await ApiService.get(`${this.baseEndpoint}/parts/conversations`);
-      return response;
-    } catch (error) {
-      console.error('Error fetching conversations:', error);
-      throw new Error('Failed to fetch conversations');
-    }
+    const requestKey = 'getConversations';
+    
+    return this.makeRequest(requestKey, async () => {
+      try {
+        const response = await ApiService.get(`${this.baseEndpoint}/parts/conversations`);
+        return response;
+      } catch (error) {
+        console.error('Error fetching conversations:', error);
+        throw new Error('Failed to fetch conversations');
+      }
+    });
   }
 
   async getConversationById(conversationId: string): Promise<Conversation> {
-    try {
-      const response = await ApiService.get(`${this.baseEndpoint}/parts/conversations/${conversationId}`);
-      return response;
-    } catch (error) {
-      console.error('Error fetching conversation:', error);
-      throw new Error('Failed to fetch conversation');
-    }
+    const requestKey = `getConversationById_${conversationId}`;
+    
+    return this.makeRequest(requestKey, async () => {
+      try {
+        const response = await ApiService.get(`${this.baseEndpoint}/parts/conversations/${conversationId}`);
+        return response;
+      } catch (error) {
+        console.error('Error fetching conversation:', error);
+        throw new Error('Failed to fetch conversation');
+      }
+    });
   }
 
   async sendMessage(conversationId: string, messageData: {
@@ -363,13 +428,17 @@ class PartsService {
   }
 
   async getUnreadCount(): Promise<{ unreadCount: number }> {
-    try {
-      const response = await ApiService.get(`${this.baseEndpoint}/parts/conversations/unread/count`);
-      return response;
-    } catch (error) {
-      console.error('Error fetching unread count:', error);
-      throw new Error('Failed to fetch unread count');
-    }
+    const requestKey = 'getUnreadCount';
+    
+    return this.makeRequest(requestKey, async () => {
+      try {
+        const response = await ApiService.get(`${this.baseEndpoint}/parts/conversations/unread/count`);
+        return response;
+      } catch (error) {
+        console.error('Error fetching unread count:', error);
+        throw new Error('Failed to fetch unread count');
+      }
+    });
   }
 
   // Image upload
@@ -379,6 +448,13 @@ class PartsService {
       
       if (!imageUri) {
         throw new Error('No image URI provided');
+      }
+
+      // Get token from ApiService's optimized method
+      const token = await AsyncStorage.getItem('@auth_token');
+      
+      if (!token) {
+        throw new Error('No authentication token available');
       }
 
       // Create FormData for the upload
@@ -396,15 +472,21 @@ class PartsService {
 
       console.log('Making request to:', `${config.apiUrl}/api/parts/upload-single`);
       
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 seconds for uploads
+      
       const response = await fetch(`${config.apiUrl}/api/parts/upload-single`, {
         method: 'POST',
         body: formData,
         headers: {
           'Accept': 'application/json',
+          'Authorization': `Bearer ${token}`,
           // Don't set Content-Type header for FormData, let the browser/RN set it
         },
-        // Add timeout to prevent hanging requests
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       console.log('Upload response status:', response.status);
       console.log('Upload response headers:', response.headers);
@@ -432,6 +514,9 @@ class PartsService {
     } catch (error) {
       console.error('PartsService.uploadImage error:', error);
       if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          throw new Error('Upload timeout');
+        }
         throw error;
       } else {
         throw new Error('Failed to upload image');
@@ -440,6 +525,12 @@ class PartsService {
   }
   async uploadImages(images: string[]): Promise<{ imageUrls: string[] }> {
     try {
+      const token = await AsyncStorage.getItem('@auth_token');
+      
+      if (!token) {
+        throw new Error('No authentication token available');
+      }
+
       const formData = new FormData();
       
       images.forEach((imageUri, index) => {
@@ -450,11 +541,20 @@ class PartsService {
         } as any);
       });
 
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 seconds for multiple uploads
+
       const response = await fetch(`${config.apiUrl}/api/parts/upload`, {
         method: 'POST',
         body: formData,
-        // Don't set Content-Type header, let the browser set it automatically with boundary
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          // Don't set Content-Type header, let the browser set it automatically with boundary
+        },
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: 'Upload failed' }));
@@ -463,6 +563,9 @@ class PartsService {
 
       return await response.json();
     } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error('Upload timeout');
+      }
       console.error('Error uploading images:', error);
       throw new Error('Failed to upload images');
     }
@@ -487,6 +590,17 @@ class PartsService {
       console.error('Error rejecting parts request:', error);
       throw new Error('Failed to reject parts request');
     }
+  }
+
+  // Utility methods
+  public clearPendingRequests(): void {
+    this.pendingRequests.clear();
+  }
+
+  public clearCache(): void {
+    // Delegate to ApiService
+    ApiService.clearCache();
+    this.clearPendingRequests();
   }
 }
 

@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { ActivityIndicator, Image, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, Keyboard, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { ModernInput } from '../../components/modern/ModernInput';
 import OpenStreetMapView from '../../components/OpenStreetMapView';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -336,7 +336,9 @@ const SignupScreen = () => {
   return (
     <KeyboardAvoidingView 
       style={{ flex: 1 }} 
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
+      enabled={true}
     >
       <View style={styles.container}>
         <Image
@@ -377,8 +379,11 @@ const SignupScreen = () => {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
         bounces={false}
+        keyboardDismissMode="on-drag"
+        automaticallyAdjustKeyboardInsets={Platform.OS === 'ios'}
       >
-        <View style={styles.content}>
+        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+          <View style={styles.content}>
         {/* Enhanced Stepper */}
         <View style={styles.stepperContainer}>
           <View style={styles.stepperHeader}>
@@ -455,6 +460,7 @@ const SignupScreen = () => {
           </TouchableOpacity>
         </View>
         </View>
+        </TouchableWithoutFeedback>
       </ScrollView>
 
       {/* Map Modal */}
@@ -560,7 +566,8 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: 40,
+    paddingBottom: 50,
+    paddingTop: 20,
   },
   stepperContainer: {
     alignItems: 'center',

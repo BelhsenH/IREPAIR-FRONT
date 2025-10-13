@@ -15,38 +15,93 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import tw from 'twrnc';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
+import FastPartsService from '../../services/fastPartsService';
 import PartsService, { PartsRequest } from '../../services/partsService';
+import PerformanceMonitor from '../../services/performanceMonitor';
 
 const PartsRequestsScreen = () => {
+  console.log('🔴 PartsRequestsScreen component rendered');
+  
   const router = useRouter();
   const { token } = useAuth();
   const { language, translations } = useLanguage();
+  
+  console.log('🔴 PartsRequestsScreen - token available:', !!token);
 
   const [requests, setRequests] = useState<PartsRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [selectedStatus] = useState<string>('all'); // Removed setSelectedStatus since it's not used
+  const [error, setError] = useState<string | null>(null);
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
+  // Debug token changes
   useEffect(() => {
-    loadRequests();
-  }, [selectedStatus]);
+    console.log('🔴 Token state changed in PartsRequestsScreen:', token ? 'HAS_TOKEN' : 'NO_TOKEN');
+  }, [token]);
 
-  const loadRequests = async () => {
-    if (!token) return;
+  const loadRequests = React.useCallback(async () => {
+    console.log('🔴 loadRequests called - token:', !!token);
+    
+    if (!token) {
+      console.log('🔴 No token available, returning early');
+      return;
+    }
     
     try {
-      if (!refreshing) setLoading(true);
+      console.log('🔴 Starting loadRequests execution...');
+      if (!refreshing && !initialLoadComplete) setLoading(true);
+      setError(null);
+      
       const params = selectedStatus !== 'all' ? { status: selectedStatus } : {};
-      const response = await PartsService.getUserPartsRequests(params);
+      console.log('🔴 Request params:', params);
+      
+      // Start the request immediately without delays
+      const startTime = Date.now();
+      console.log('🚀 Starting parts request fetch...');
+      PerformanceMonitor.startRequest('getUserPartsRequests');
+      
+      let response;
+      
+      // Try fast service first, fallback to regular service
+      try {
+        console.log('⚡ Trying FastPartsService first...');
+        response = await FastPartsService.fastGetUserPartsRequests(params);
+      } catch (fastError: any) {
+        console.warn('⚠️ FastPartsService failed, trying regular service:', fastError?.message || 'Unknown error');
+        response = await PartsService.getUserPartsRequests(params);
+      }
+      
+      const endTime = Date.now();
+      const duration = endTime - startTime;
+      console.log(`✅ Parts request fetch completed in ${duration}ms`);
+      PerformanceMonitor.endRequest('getUserPartsRequests');
+      
+      if (duration > 3000) {
+        console.warn('🐌 Parts request took longer than expected!');
+        console.log('📊 Performance stats:', PerformanceMonitor.getStats());
+      }
+      
       setRequests(response.requests || []);
-    } catch (error) {
+      setInitialLoadComplete(true);
+    } catch (error: any) {
       console.error('Error loading requests:', error);
-      Alert.alert('Error', 'Failed to load parts requests');
+      setError(error.message || 'Failed to load parts requests');
+      
+      // Don't show alert for network errors, just show retry option
+      if (!error.message?.includes('timeout') && !error.message?.includes('network')) {
+        Alert.alert('Error', 'Failed to load parts requests');
+      }
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [token, selectedStatus, refreshing, initialLoadComplete]);
+
+  useEffect(() => {
+    console.log('🔴 useEffect triggered - loading requests...');
+    loadRequests();
+  }, [loadRequests]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -98,13 +153,7 @@ const PartsRequestsScreen = () => {
     );
   };
 
-  const statusFilters = [
-    { key: 'all', label: translations[language].all, icon: 'list-outline' },
-    { key: 'pending', label: translations[language].pending, icon: 'time-outline' },
-    { key: 'accepted', label: translations[language].accepted, icon: 'checkmark-circle' },
-    { key: 'completed', label: translations[language].completed, icon: 'checkmark-done-circle' },
-    { key: 'rejected', label: translations[language].rejected, icon: 'close-circle' },
-  ];
+
 
   const RequestCard = ({ request }: { request: PartsRequest }) => {
     const part = typeof request.partId === 'object' ? request.partId : null;
@@ -160,7 +209,7 @@ const PartsRequestsScreen = () => {
           </View>
           {getPartImage() && (
             <Image 
-              source={{ uri: getPartImage() }} 
+              source={{ uri: getPartImage() || '' }} 
               style={tw`w-16 h-16 rounded-lg`}
             />
           )}
@@ -399,10 +448,31 @@ const PartsRequestsScreen = () => {
       </ScrollView> */}
 
       {/* Content */}
-      {loading ? (
+      {loading && !initialLoadComplete ? (
         <View style={tw`flex-1 items-center justify-center`}>
           <ActivityIndicator size="large" color="#1E3A8A" />
-          <Text style={tw`text-gray-600 mt-4`}>{translations[language].loadingRequests}</Text>
+          <Text style={tw`text-gray-600 mt-4`}>
+            {translations[language].loadingRequests || 'Loading requests...'}
+          </Text>
+          <Text style={tw`text-gray-500 mt-2 text-sm`}>This should be fast...</Text>
+        </View>
+      ) : error ? (
+        <View style={tw`flex-1 items-center justify-center px-6`}>
+          <View style={tw`w-20 h-20 rounded-full bg-red-100 items-center justify-center mb-4`}>
+            <Ionicons name="alert-circle-outline" size={32} color="#EF4444" />
+          </View>
+          <Text style={tw`text-lg font-semibold text-gray-900 mb-2 text-center`}>
+            Connection Error
+          </Text>
+          <Text style={tw`text-gray-600 text-center mb-6`}>
+            {error}
+          </Text>
+          <TouchableOpacity
+            style={tw`bg-blue-900 px-6 py-3 rounded-lg`}
+            onPress={() => loadRequests()}
+          >
+            <Text style={tw`text-white font-semibold`}>Try Again</Text>
+          </TouchableOpacity>
         </View>
       ) : (
         <ScrollView

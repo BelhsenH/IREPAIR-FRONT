@@ -17,6 +17,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import ConversationService, { Conversation } from '../../services/conversationService';
+import FastPartsService from '../../services/fastPartsService';
 import WebSocketService, { WebSocketMessage } from '../../services/websocketService';
 
 // Professional color palette
@@ -193,9 +194,13 @@ const ConversationItem = React.memo<ConversationItemProps>(({ item, onPress, cur
 ConversationItem.displayName = 'ConversationItem';
 
 const OptimizedConversationsScreen = () => {
+  console.log('🔵 OptimizedConversationsScreen component rendered');
+  
   const router = useRouter();
   const { user, token } = useAuth();
   const { language, translations } = useLanguage();
+  
+  console.log('🔵 OptimizedConversationsScreen - token available:', !!token);
   
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -208,17 +213,38 @@ const OptimizedConversationsScreen = () => {
 
   // Optimized load conversations with error handling and caching
   const loadConversations = useCallback(async (showLoader = true) => {
-    if (loadingRef.current || !token) return;
+    console.log('🔵 loadConversations called - token:', !!token, 'loading:', loadingRef.current);
     
+    if (loadingRef.current || !token) {
+      console.log('🔵 Early return - loadingRef.current:', loadingRef.current, 'token:', !!token);
+      return;
+    }
+    
+    console.log('🔵 Starting loadConversations execution...');
     loadingRef.current = true;
     if (showLoader) setLoading(true);
     setError(null);
 
     try {
-      const data = await ConversationService.getConversations();
+      const startTime = Date.now();
+      console.log('🚀 Starting conversations fetch...');
+      
+      let data;
+      
+      // Try fast service first, fallback to regular service
+      try {
+        console.log('⚡ Trying FastPartsService for conversations...');
+        data = await FastPartsService.fastGetConversations();
+      } catch (fastError: any) {
+        console.warn('⚠️ FastPartsService failed for conversations, trying regular service:', fastError?.message || 'Unknown error');
+        data = await ConversationService.getConversations();
+      }
+      
+      const endTime = Date.now();
+      console.log(`✅ Conversations fetch completed in ${endTime - startTime}ms`);
       
       // Sort conversations by last message time
-      const sortedConversations = data.sort((a, b) => {
+      const sortedConversations = (data as Conversation[]).sort((a: Conversation, b: Conversation) => {
         const aTime = new Date(a.lastMessage?.timestamp || a.updatedAt || 0).getTime();
         const bTime = new Date(b.lastMessage?.timestamp || b.updatedAt || 0).getTime();
         return bTime - aTime;
@@ -228,6 +254,13 @@ const OptimizedConversationsScreen = () => {
     } catch (error: any) {
       console.error('Error loading conversations:', error);
       setError(error.message || 'Unable to load conversations');
+      
+      // Show different error messages based on error type
+      if (error.message?.includes('timeout')) {
+        setError('Request timeout. Please check your connection and try again.');
+      } else if (error.message?.includes('Network')) {
+        setError('Network error. Please check your internet connection.');
+      }
     } finally {
       setLoading(false);
       loadingRef.current = false;
