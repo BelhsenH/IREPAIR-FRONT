@@ -53,7 +53,7 @@ const SplashScreen: React.FC = () => {
         >
           <View style={styles.logoWrapper}>
             <Image
-              source={require('../../assets/images/irepairlogo.png')}
+              source={require('../../assets/images/irepair-logo.png')}
               style={styles.logo}
               resizeMode="contain"
             />
@@ -228,13 +228,13 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   dot1: {
-    backgroundColor: '#FFD700',
+    backgroundColor: '#BF2000',
   },
   dot2: {
     backgroundColor: '#333',
   },
   dot3: {
-    backgroundColor: '#FFD700',
+    backgroundColor: '#BF2000',
   },
 });
 

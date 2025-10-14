@@ -1,25 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
+import { useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
+  ActivityIndicator,
+  Alert,
+  Image,
+  Modal,
+  ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
-  Alert,
-  ActivityIndicator,
-  Image,
-  Modal,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import tw from 'twrnc';
-import * as ImagePicker from 'expo-image-picker';
-import { useAuth } from '../../contexts/AuthContext';
-import PartsService, { Category, SubCategory, Item } from '../../services/partsService';
-import ConversationService from '../../services/conversationService';
-import { useLanguage } from '../../contexts/LanguageContext';
 import config from '../../config';
+import { useAuth } from '../../contexts/AuthContext';
+import { useLanguage } from '../../contexts/LanguageContext';
+import ConversationService from '../../services/conversationService';
+import PartsService, { Category, Item, SubCategory } from '../../services/partsService';
 
 
 const CreatePartsRequestScreen = () => {
@@ -367,17 +367,17 @@ const CreatePartsRequestScreen = () => {
                     onPress={() => {
                       setSelectedCategory(category);
                       setSelectedSubCategory(null);
-                      setSelectedItem(null);
-                      loadSubCategories(category._id);
-                      setShowCategorySelection(false);
-                    }}
-                  >
-                    <View style={tw`w-16 h-16 rounded-lg bg-blue-100 items-center justify-center mr-3`}>
-                      {category.imagePath && getImageUrl(category.imagePath) ? (
-                        <Image
-                          source={{ uri: getImageUrl(category.imagePath) || '' }}
-                          style={tw`w-full h-full rounded-lg`}
-                          resizeMode="cover"
+                    setSelectedItem(null);
+                    loadSubCategories(category._id);
+                    setShowCategorySelection(false);
+                  }}
+                >
+                  <View style={tw`w-16 h-16 rounded-lg bg-red-100 items-center justify-center mr-3`}>
+                    {category.imagePath && getImageUrl(category.imagePath) ? (
+                      <Image
+                        source={{ uri: getImageUrl(category.imagePath) || '' }}
+                        style={tw`w-full h-full rounded-lg`}
+                        resizeMode="cover"
                         />
                       ) : (
                         <Ionicons name="grid" size={24} color="#2563EB" />
@@ -501,7 +501,7 @@ const CreatePartsRequestScreen = () => {
                       setShowImageUpload(true);
                     }}
                   >
-                    <View style={tw`w-16 h-16 rounded-lg bg-blue-100 items-center justify-center mr-3`}>
+                    <View style={tw`w-16 h-16 rounded-lg bg-red-100 items-center justify-center mr-3`}>
                       {item.imagePath && getImageUrl(item.imagePath) ? (
                         <Image
                           source={{ uri: getImageUrl(item.imagePath) || '' }}
@@ -565,17 +565,17 @@ const CreatePartsRequestScreen = () => {
                     setUploadedImage(null);
                   }}
                 >
-                  <Ionicons name="close" size={20} color="white" />
-                </TouchableOpacity>
-                {previewImage && !uploadedImage && (
-                  <View style={tw`absolute bottom-2 left-2 bg-blue-500 rounded-lg px-2 py-1`}>
-                    <Text style={tw`text-white text-xs font-medium`}>{translations[language].preview}</Text>
-                  </View>
-                )}
-                {uploadedImage && (
-                  <View style={tw`absolute bottom-2 left-2 bg-green-500 rounded-lg px-2 py-1`}>
-                    <Text style={tw`text-white text-xs font-medium`}>{translations[language].uploaded}</Text>
-                  </View>
+                <Ionicons name="close" size={20} color="white" />
+              </TouchableOpacity>
+              {previewImage && !uploadedImage && (
+                <View style={tw`absolute bottom-2 left-2 bg-red-500 rounded-lg px-2 py-1`}>
+                  <Text style={tw`text-white text-xs font-medium`}>{translations[language].preview}</Text>
+                </View>
+              )}
+              {uploadedImage && (
+                <View style={tw`absolute bottom-2 left-2 bg-green-500 rounded-lg px-2 py-1`}>
+                  <Text style={tw`text-white text-xs font-medium`}>{translations[language].uploaded}</Text>
+                </View>
                 )}
               </View>
             )}
@@ -615,7 +615,7 @@ const CreatePartsRequestScreen = () => {
                 ) : (
                   <>
                     <TouchableOpacity
-                      style={tw`flex-1 bg-blue-600 rounded-xl p-4 flex-row items-center justify-center`}
+                      style={tw`flex-1 bg-red-600 rounded-xl p-4 flex-row items-center justify-center`}
                       onPress={handleCamera}
                     >
                       <Ionicons name="camera" size={20} color="white" />
@@ -651,7 +651,7 @@ const CreatePartsRequestScreen = () => {
 
   return (
     <SafeAreaView style={tw`flex-1 bg-gray-50`}>
-      <View style={tw`bg-blue-900 p-4 flex-row items-center shadow-lg`}>
+      <View style={tw`bg-red-900 p-4 flex-row items-center shadow-lg`}>
         <TouchableOpacity
           style={tw`mr-3`}
           onPress={() => router.back()}
@@ -690,7 +690,7 @@ const CreatePartsRequestScreen = () => {
           >
             {selectedCategory ? (
               <View style={tw`flex-row items-center flex-1`}>
-                <View style={tw`w-12 h-12 rounded-lg bg-blue-100 items-center justify-center mr-3`}>
+                <View style={tw`w-12 h-12 rounded-lg bg-red-100 items-center justify-center mr-3`}>
                   {selectedCategory.imagePath && getImageUrl(selectedCategory.imagePath) ? (
                     <Image
                       source={{ uri: getImageUrl(selectedCategory.imagePath) || '' }}
@@ -698,7 +698,7 @@ const CreatePartsRequestScreen = () => {
                       resizeMode="cover"
                     />
                   ) : (
-                    <Ionicons name="grid" size={24} color="#2563EB" />
+                    <Ionicons name="grid" size={24} color="#BF2000" />
                   )}
                 </View>
                 <View style={tw`flex-1`}>
@@ -733,8 +733,8 @@ const CreatePartsRequestScreen = () => {
             >
               {selectedSubCategory ? (
                 <View style={tw`flex-row items-center flex-1`}>
-                  <View style={tw`w-12 h-12 rounded-lg bg-blue-100 items-center justify-center mr-3`}>
-                    <Ionicons name="list" size={24} color="#2563EB" />
+                  <View style={tw`w-12 h-12 rounded-lg bg-red-100 items-center justify-center mr-3`}>
+                    <Ionicons name="list" size={24} color="#BF2000" />
                   </View>
                   <View style={tw`flex-1`}>
                     <Text style={tw`text-lg font-semibold text-gray-900`}>
@@ -769,7 +769,7 @@ const CreatePartsRequestScreen = () => {
             >
               {selectedItem ? (
                 <View style={tw`flex-row items-center flex-1`}>
-                  <View style={tw`w-12 h-12 rounded-lg bg-blue-100 items-center justify-center mr-3`}>
+                  <View style={tw`w-12 h-12 rounded-lg bg-red-100 items-center justify-center mr-3`}>
                     {selectedItem.imagePath && getImageUrl(selectedItem.imagePath) ? (
                       <Image
                         source={{ uri: getImageUrl(selectedItem.imagePath) || '' }}
@@ -777,7 +777,7 @@ const CreatePartsRequestScreen = () => {
                         resizeMode="cover"
                       />
                     ) : (
-                      <Ionicons name="cube" size={24} color="#2563EB" />
+                      <Ionicons name="cube" size={24} color="#BF2000" />
                     )}
                   </View>
                   <View style={tw`flex-1`}>
@@ -911,7 +911,7 @@ const CreatePartsRequestScreen = () => {
         {/* Submit Button */}
         <TouchableOpacity
           style={[
-            tw`bg-blue-600 rounded-xl p-4 flex-row items-center justify-center`,
+            tw`bg-red-600 rounded-xl p-4 flex-row items-center justify-center`,
             loading && tw`opacity-50`
           ]}
           onPress={handleSubmit}
@@ -930,10 +930,10 @@ const CreatePartsRequestScreen = () => {
         </TouchableOpacity>
 
         {/* Help Text */}
-        <View style={tw`mt-4 p-4 bg-blue-50 rounded-xl border border-blue-200`}>
+        <View style={tw`mt-4 p-4 bg-red-50 rounded-xl border border-red-200`}>
           <View style={tw`flex-row items-start`}>
-            <Ionicons name="information-circle" size={20} color="#2563EB" />
-            <Text style={tw`text-blue-700 text-sm ml-2 flex-1`}>
+            <Ionicons name="information-circle" size={20} color="#BF2000" />
+            <Text style={tw`text-red-700 text-sm ml-2 flex-1`}>
               {translations[language].requestHelpText || 
                 "After submitting your request, ipiece users with matching vehicles will be notified and can contact you through the messaging system or phone."}
             </Text>

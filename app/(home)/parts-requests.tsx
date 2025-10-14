@@ -179,7 +179,7 @@ const PartsRequestsScreen = () => {
         style={tw`bg-white rounded-xl p-3 mb-3 border border-gray-200 shadow-sm`}
         onPress={() => {
           if (request.conversationId) {
-            router.push(`/messages` as any);
+            router.push(`/conversations-optimized` as any);
           }
         }}
       >
@@ -291,25 +291,25 @@ const PartsRequestsScreen = () => {
 
         {/* Engagement Metrics */}
         {request.engagementMetrics && (
-          <View style={tw`bg-blue-50 rounded-lg p-2.5 mb-2 border border-blue-200`}>
-            <Text style={tw`text-sm font-semibold text-blue-900 mb-1.5`}>{translations[language].requestVisibility}</Text>
+          <View style={tw`bg-red-50 rounded-lg p-2.5 mb-2 border border-red-200`}>
+            <Text style={tw`text-sm font-semibold text-red-900 mb-1.5`}>{translations[language].requestVisibility}</Text>
             <View style={tw`flex-row flex-wrap gap-3`}>
               <View style={tw`flex-row items-center`}>
-                <Ionicons name="eye-outline" size={16} color="#2563EB" />
-                <Text style={tw`text-sm text-blue-700 ml-1`}>
+                <Ionicons name="eye-outline" size={16} color="#BF2000" />
+                <Text style={tw`text-sm text-red-700 ml-1`}>
                   {request.engagementMetrics.totalViews} {translations[language].views}
                 </Text>
               </View>
               <View style={tw`flex-row items-center`}>
-                <Ionicons name="people-outline" size={16} color="#2563EB" />
-                <Text style={tw`text-sm text-blue-700 ml-1`}>
+                <Ionicons name="people-outline" size={16} color="#BF2000" />
+                <Text style={tw`text-sm text-red-700 ml-1`}>
                   {request.engagementMetrics.uniqueViewers} {translations[language].suppliersViewed}
                 </Text>
               </View>
               {request.engagementMetrics.interestedUsers > 0 && (
                 <View style={tw`flex-row items-center`}>
-                  <Ionicons name="heart-outline" size={16} color="#F59E0B" />
-                  <Text style={tw`text-sm text-yellow-700 ml-1`}>
+                  <Ionicons name="heart-outline" size={16} color="#BF2000" />
+                  <Text style={tw`text-sm text-red-700 ml-1`}>
                     {request.engagementMetrics.interestedUsers} {translations[language].interested}
                   </Text>
                 </View>
@@ -348,7 +348,7 @@ const PartsRequestsScreen = () => {
               </View>
               <TouchableOpacity
                 style={tw`bg-green-600 px-2.5 py-1.5 rounded-lg`}
-                onPress={() => router.push(`/messages` as any)}
+                onPress={() => router.push(`/conversations-optimized` as any)}
               >
                 <Text style={tw`text-white text-xs font-medium`}>{translations[language].chat}</Text>
               </TouchableOpacity>
@@ -382,7 +382,7 @@ const PartsRequestsScreen = () => {
             {request.conversationId && (
               <TouchableOpacity
                 style={tw`bg-blue-600 px-2.5 py-1.5 rounded-lg mr-2`}
-                onPress={() => router.push(`/messages` as any)}
+                onPress={() => router.push(`/conversations-optimized` as any)}
               >
                 <Text style={tw`text-white text-xs font-medium`}>{translations[language].message}</Text>
               </TouchableOpacity>
@@ -397,7 +397,7 @@ const PartsRequestsScreen = () => {
   return (
     <SafeAreaView style={tw`flex-1 bg-gray-50`}>
       {/* Header */}
-      <View style={tw`bg-blue-900 p-4 flex-row items-center shadow-sm`}>
+      <View style={tw`bg-red-900 p-4 flex-row items-center shadow-sm`}>
         <TouchableOpacity
           style={tw`mr-3`}
           onPress={() => router.back()}

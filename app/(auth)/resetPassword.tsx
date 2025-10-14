@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView, ActivityIndicator } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useLanguage } from '../../contexts/LanguageContext';
-import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { authService } from '../../scripts/auth-script';
 
 const ResetPasswordScreen = () => {
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#FFD700',
+    color: '#BF2000',
     textAlign: 'center',
     marginBottom: 10,
     letterSpacing: 1,
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    backgroundColor: '#FFD700',
+    backgroundColor: '#BF2000',
     paddingVertical: 15,
     borderRadius: 25,
     alignItems: 'center',
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
   },
   resendButtonText: {
     fontSize: 16,
-    color: '#FFD700',
+    color: '#BF2000',
     fontWeight: '600',
     textDecorationLine: 'underline',
   },
@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   backLink: {
-    color: '#FFD700',
+    color: '#BF2000',
     fontWeight: 'bold',
     textDecorationLine: 'underline',
   },

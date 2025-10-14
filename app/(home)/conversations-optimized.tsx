@@ -3,15 +3,15 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-    ActivityIndicator,
-    FlatList,
-    InteractionManager,
-    Platform,
-    RefreshControl,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  FlatList,
+  InteractionManager,
+  Platform,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../contexts/AuthContext';
@@ -22,8 +22,8 @@ import WebSocketService, { WebSocketMessage } from '../../services/websocketServ
 
 // Professional color palette
 const Colors = {
-  primary: '#2563EB',
-  secondary: '#3B82F6',
+  primary: '#BF2000',
+  secondary: '#E53E3E',
   accent: '#F59E0B',
   background: '#F8FAFC',
   surface: '#FFFFFF',
@@ -36,9 +36,9 @@ const Colors = {
   border: '#E5E7EB',
   unread: '#EF4444',
   online: '#10B981',
-  gradient: ['#2563EB', '#3B82F6'] as const,
+  gradient: ['#BF2000', '#E53E3E'] as const,
 };
-
+  
 const Typography = {
   fontSize: {
     xs: 12,

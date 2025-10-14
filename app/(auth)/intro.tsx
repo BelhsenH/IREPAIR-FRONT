@@ -42,7 +42,7 @@ const IntroScreen = () => {
       >
         <View style={styles.logoContainer}>
           <Image
-            source={require('../../assets/images/irepairlogo.png')}
+            source={require('../../assets/images/irepair-logo.png')}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -104,15 +104,15 @@ const IntroScreen = () => {
           style={styles.featuresContainer}
         >
           <View style={styles.feature}>
-            <Ionicons name="shield-checkmark-outline" size={20} color="#FFD700" />
+            <Ionicons name="shield-checkmark-outline" size={20} color="#BF2000" />
             <Text style={styles.featureText}>Certified Professionals</Text>
           </View>
           <View style={styles.feature}>
-            <Ionicons name="time-outline" size={20} color="#FFD700" />
+            <Ionicons name="time-outline" size={20} color="#BF2000" />
             <Text style={styles.featureText}>24/7 Service</Text>
           </View>
           <View style={styles.feature}>
-            <Ionicons name="star-outline" size={20} color="#FFD700" />
+            <Ionicons name="star-outline" size={20} color="#BF2000" />
             <Text style={styles.featureText}>Quality Guaranteed</Text>
           </View>
         </Animatable.View>
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   },
   tagline: {
     fontSize: 14,
-    color: '#FFD700',
+    color: '#BF2000',
     fontWeight: '500',
     letterSpacing: 1,
   },

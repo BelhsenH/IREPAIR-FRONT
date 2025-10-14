@@ -11,40 +11,40 @@
     "ios": {
       "supportsTablet": true,
       "splash": {
-        "image": "./assets/images/irepairlogo.png",
+        "image": "./assets/images/irepair-icon.png",
         "resizeMode": "contain",
         "backgroundColor": "#ffffff"
       }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/irepairlogo.png",
+        "foregroundImage": "./assets/images/irepair-icon.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.amenybouabdallah.irepair",
       "splash": {
-        "image": "./assets/images/irepairlogo.png",
+        "image": "./assets/images/irepair-icon.png",
         "resizeMode": "contain",
         "backgroundColor": "#ffffff",
-        "mdpi": "./assets/images/irepairlogo.png",
-        "hdpi": "./assets/images/irepairlogo.png",
-        "xhdpi": "./assets/images/irepairlogo.png",
-        "xxhdpi": "./assets/images/irepairlogo.png",
-        "xxxhdpi": "./assets/images/irepairlogo.png"
+        "mdpi": "./assets/images/irepair-icon.png",
+        "hdpi": "./assets/images/irepair-icon.png",
+        "xhdpi": "./assets/images/irepair-icon.png",
+        "xxhdpi": "./assets/images/irepair-icon.png",
+        "xxxhdpi": "./assets/images/irepair-icon.png"
       }
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/irepairlogo.png"
+      "favicon": "./assets/images/irepair-icon.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/irepairlogo.png",
+          "image": "./assets/images/irepair-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"

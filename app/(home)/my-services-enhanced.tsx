@@ -1,29 +1,29 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-  ActivityIndicator,
-  RefreshControl,
-  TextInput,
-  Modal,
-  StatusBar,
-  Platform,
-  SafeAreaView,
-} from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  Modal,
+  Platform,
+  RefreshControl,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { serviceAPI } from '../../scripts/service-script';
 
 // Professional color palette for mechanics
 const Colors = {
-  primary: '#1E3A8A', // Deep blue
-  secondary: '#3B82F6', // Bright blue
+  primary: '#BF2000', // Deep red
+  secondary: '#E53E3E', // Bright red
   accent: '#F59E0B', // Amber/orange
   background: '#F8FAFC', // Light gray
   surface: '#FFFFFF',
@@ -36,7 +36,7 @@ const Colors = {
   danger: '#EF4444',
   border: '#E5E7EB',
   inputBorder: '#D1D5DB',
-  headerGradient: ['#1E3A8A', '#3B82F6'] as const,
+  headerGradient: ['#BF2000', '#E53E3E'] as const,
   white: '#FFFFFF',
   error: '#EF4444',
 };

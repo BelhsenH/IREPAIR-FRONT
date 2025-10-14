@@ -1,22 +1,22 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-  ActivityIndicator,
-  RefreshControl,
-  Modal,
-  Linking,
-} from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { useLanguage } from '../../contexts/LanguageContext';
-import { Colors, Typography, Spacing, BorderRadius, Shadows } from '../../constants/Theme';
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+    ActivityIndicator,
+    Alert,
+    Linking,
+    Modal,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from 'react-native';
 import { ModernButton } from '../../components/modern/ModernButton';
+import { BorderRadius, Colors, Shadows, Spacing, Typography } from '../../constants/Theme';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { serviceAPI } from '../../scripts/service-script';
 
 const Theme = {
@@ -73,7 +73,7 @@ interface ServiceRequest {
 }
 
 const statusColors: Record<string, string> = {
-  pending: '#F39C12',
+  pending: '#BF2000',
   accepted: '#3498DB',
   in_progress: '#9B59B6',
   no_parts: '#E74C3C',

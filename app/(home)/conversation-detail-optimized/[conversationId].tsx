@@ -27,28 +27,28 @@ const { width: screenWidth } = Dimensions.get('window');
 
 // Professional color palette
 const Colors = {
-  primary: '#2563EB',
-  secondary: '#3B82F6',
-  accent: '#F59E0B',
+  primary: '#BF2000',
+  secondary: '#E53E3E',
+  accent: '#BF2000',
   background: '#F8FAFC',
   surface: '#FFFFFF',
   textPrimary: '#1F2937',
   textSecondary: '#6B7280',
   textLight: '#9CA3AF',
   success: '#10B981',
-  warning: '#F59E0B',
+  warning: '#BF2000',
   error: '#EF4444',
   border: '#E5E7EB',
   
   // Message colors
   sentMessage: '#2563EB',
-  receivedMessage: '#FFFFFF',
+  receivedMessage: '#F3F4F6',
   sentText: '#FFFFFF',
   receivedText: '#1F2937',
   messageTime: '#9CA3AF',
-  
-  gradient: ['#2563EB', '#3B82F6'] as const,
-  sentGradient: ['#2563EB', '#3B82F6'] as const,
+
+  gradient: ['#BF2000', '#E53E3E'] as const,
+  sentGradient: ['#BF2000', '#E53E3E'] as const,
 };
 
 const Typography = {
@@ -100,52 +100,6 @@ const MessageItem = React.memo<MessageItemProps>(({ item, isFromCurrentUser, sho
     return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
   }, []);
 
-  const messageContent = useMemo(() => (
-    <View style={[
-      styles.messageBubble,
-      isFromCurrentUser ? styles.sentBubble : styles.receivedBubble
-    ]}>
-      {!isFromCurrentUser && showSender && item.sender && (
-        <Text style={styles.senderName}>
-          {item.sender.firstName} {item.sender.lastName}
-        </Text>
-      )}
-      
-      {item.content && (
-        <Text style={[
-          styles.messageText,
-          isFromCurrentUser ? styles.sentText : styles.receivedText
-        ]}>
-          {item.content}
-        </Text>
-      )}
-
-
-
-      <View style={[
-        styles.messageFooter,
-        isFromCurrentUser ? styles.sentFooter : styles.receivedFooter
-      ]}>
-        <Text style={[
-          styles.timestamp,
-          isFromCurrentUser ? styles.sentTimestamp : styles.receivedTimestamp
-        ]}>
-          {formatTime(item.timestamp || item.createdAt || new Date())}
-        </Text>
-        
-        {isFromCurrentUser && (
-          <View style={styles.messageStatus}>
-            <Ionicons 
-              name="checkmark-done" 
-              size={14} 
-              color="rgba(255, 255, 255, 0.7)" 
-            />
-          </View>
-        )}
-      </View>
-    </View>
-  ), [item, isFromCurrentUser, showSender, formatTime]);
-
   return (
     <Animated.View 
       style={[
@@ -163,16 +117,53 @@ const MessageItem = React.memo<MessageItemProps>(({ item, isFromCurrentUser, sho
       ]}
     >
       {isFromCurrentUser ? (
+        // Sent message - gradient background
         <LinearGradient
           colors={Colors.sentGradient}
           style={[styles.messageBubble, styles.sentBubble]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         >
-          {messageContent.props.children}
+          {item.content && (
+            <Text style={[styles.messageText, styles.sentText]}>
+              {item.content}
+            </Text>
+          )}
+          
+          <View style={[styles.messageFooter, styles.sentFooter]}>
+            <Text style={[styles.timestamp, styles.sentTimestamp]}>
+              {formatTime(item.timestamp || item.createdAt || new Date())}
+            </Text>
+            <View style={styles.messageStatus}>
+              <Ionicons 
+                name="checkmark-done" 
+                size={14} 
+                color="rgba(255, 255, 255, 0.7)" 
+              />
+            </View>
+          </View>
         </LinearGradient>
       ) : (
-        messageContent
+        // Received message - white background with border
+        <View style={[styles.messageBubble, styles.receivedBubble]}>
+          {showSender && item.sender && (
+            <Text style={styles.senderName}>
+              {item.sender.firstName} {item.sender.lastName}
+            </Text>
+          )}
+          
+          {item.content && (
+            <Text style={[styles.messageText, styles.receivedText]}>
+              {item.content}
+            </Text>
+          )}
+          
+          <View style={[styles.messageFooter, styles.receivedFooter]}>
+            <Text style={[styles.timestamp, styles.receivedTimestamp]}>
+              {formatTime(item.timestamp || item.createdAt || new Date())}
+            </Text>
+          </View>
+        </View>
       )}
     </Animated.View>
   );
@@ -666,9 +657,13 @@ const styles = StyleSheet.create({
   },
   sentMessageContainer: {
     alignItems: 'flex-end',
+    alignSelf: 'flex-end',
+    width: '100%',
   },
   receivedMessageContainer: {
     alignItems: 'flex-start',
+    alignSelf: 'flex-start',
+    width: '100%',
   },
   messageBubble: {
     maxWidth: screenWidth * 0.75,
@@ -684,12 +679,14 @@ const styles = StyleSheet.create({
   sentBubble: {
     backgroundColor: Colors.sentMessage,
     borderBottomRightRadius: 8,
+    marginLeft: screenWidth * 0.2, // Push sent messages to the right
   },
   receivedBubble: {
     backgroundColor: Colors.receivedMessage,
     borderBottomLeftRadius: 8,
     borderWidth: 1,
     borderColor: Colors.border,
+    marginRight: screenWidth * 0.2, // Push received messages to the left
   },
   senderName: {
     fontSize: Typography.fontSize.xs,

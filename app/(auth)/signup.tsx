@@ -580,7 +580,7 @@ const styles = StyleSheet.create({
   },
   stepNumber: {
     fontSize: 14,
-    color: '#FFD700',
+    color: '#BF2000',
     fontWeight: '600' as const,
     marginBottom: 4,
   },
@@ -607,8 +607,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   stepperDotActive: {
-    backgroundColor: '#FFD700',
-    borderColor: '#FFD700',
+    backgroundColor: '#BF2000',
+    borderColor: '#BF2000',
   },
   stepperDotText: {
     fontSize: 12,
@@ -624,7 +624,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.3)',
   },
   stepperLineActive: {
-    backgroundColor: '#FFD700',
+    backgroundColor: '#BF2000',
   },
   errorContainer: {
     flexDirection: 'row',
@@ -651,7 +651,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#FFD700',
+    color: '#BF2000',
     textAlign: 'center',
     marginBottom: 20,
     letterSpacing: 1,
@@ -678,7 +678,7 @@ const styles = StyleSheet.create({
     minWidth: 120,
   },
   primaryButton: {
-    backgroundColor: '#FFD700',
+    backgroundColor: '#BF2000',
     flex: 2,
   },
   secondaryButton: {
@@ -797,7 +797,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   serviceItemSelected: {
-    backgroundColor: 'rgba(255,215,0,0.9)',
+    backgroundColor: 'rgba(191,32,0,0.9)',
     borderColor: '#000',
     borderWidth: 2,
   },
@@ -871,7 +871,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   locationButton: {
-    backgroundColor: '#FFD700',
+    backgroundColor: '#BF2000',
     padding: 10,
     borderRadius: 10,
     marginTop: 5,

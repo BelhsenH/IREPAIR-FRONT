@@ -3,15 +3,15 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  Modal,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    Modal,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context'; // <-- Add this import
 import { ModernButton } from '../../components/modern/ModernButton';
@@ -73,7 +73,7 @@ interface ServiceRequest {
 }
 
 const statusColors: Record<string, string> = {
-  pending: '#F39C12',
+  pending: '#BF2000',
   accepted: '#3498DB',
   in_progress: '#9B59B6',
   no_parts: '#E74C3C',

@@ -9,8 +9,8 @@ import { useLanguage } from '../../contexts/LanguageContext';
 
 // Professional color palette for mechanics
 const Colors = {
-  primary: '#1E3A8A', // Deep blue
-  secondary: '#3B82F6', // Bright blue
+  primary: '#BF2000', // Deep red
+  secondary: '#E53E3E', // Bright red
   accent: '#F59E0B', // Amber/orange
   background: '#F8FAFC', // Light gray
   surface: '#FFFFFF',
@@ -23,7 +23,7 @@ const Colors = {
   danger: '#EF4444',
   border: '#E5E7EB',
   sidebarBackground: '#F8FAFC',
-  headerGradient: ['#1E3A8A', '#3B82F6'] as const,
+  headerGradient: ['#BF2000', '#E53E3E'] as const,
 };
 
 const { width } = Dimensions.get('window');

@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, ActivityIndicator } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useLanguage } from '../../contexts/LanguageContext';
-import { useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { authService } from '../../scripts/auth-script';
-import { ModernInput } from '../../components/modern/ModernInput';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ModernInput } from '../../components/modern/ModernInput';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { authService } from '../../scripts/auth-script';
 
 const VerifyScreen = () => {
   const { language, translations, toggleLanguage } = useLanguage();
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#FFD700',
+    color: '#BF2000',
     textAlign: 'center',
     marginBottom: 10,
     letterSpacing: 1,
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    backgroundColor: '#FFD700',
+    backgroundColor: '#BF2000',
     paddingVertical: 15,
     borderRadius: 25,
     alignItems: 'center',
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
   },
   resendButtonText: {
     fontSize: 16,
-    color: '#FFD700',
+    color: '#BF2000',
     fontWeight: '600',
     textDecorationLine: 'underline',
   },

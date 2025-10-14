@@ -159,7 +159,7 @@ const LoginScreen = () => {
             <View style={styles.headerSection}>
               <View style={styles.logoContainer}>
                 <Image
-                  source={require('../../assets/images/irepairlogo.png')}
+                  source={require('../../assets/images/irepair-logo.png')}
                   style={styles.miniLogo}
                   resizeMode="contain"
                 />
@@ -474,7 +474,7 @@ const styles = StyleSheet.create({
   },
   forgotPasswordText: {
     fontSize: 14,
-    color: '#FFD700',
+    color: '#BF2000',
     fontWeight: '500' as const,
   },
   loginButton: {
@@ -539,7 +539,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   signupLink: {
-    color: '#FFD700',
+    color: '#BF2000',
     fontWeight: '600' as const,
     fontSize: 16,
   },

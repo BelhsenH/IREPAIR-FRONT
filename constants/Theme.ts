@@ -1,6 +1,6 @@
 export const Colors = {
-  primary: '#2E86C1',
-  secondary: '#85C1E9',
+  primary: '#BF2000',
+  secondary: '#E53E3E',
   background: '#F8F9FA',
   surface: '#FFFFFF',
   text: '#2C3E50',
@@ -9,7 +9,7 @@ export const Colors = {
   white: '#FFFFFF',
   success: '#27AE60',
   error: '#E74C3C',
-  warning: '#F39C12',
+  warning: '#BF2000',
   info: '#3498DB',
 };
 
