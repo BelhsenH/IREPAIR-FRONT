@@ -1,4 +1,4 @@
-import React,{ createContext, useContext, useState, ReactNode} from "react";
+import React, { createContext, ReactNode, useContext, useState } from "react";
 export type Language = "fr" | "ar";
 interface LanguageContextProps{
     language: Language;
@@ -12,7 +12,7 @@ const translations = {
     fr: {
         welcome: "Bienvenue sur IREPAIR",
         introTitle: "Commençons avec nous",
-        introSubtitle: "Trouvez ou vendez facilement des pièces automobiles. Proposez vos services de mécanique et développez votre activité en toute simplicité",
+        introSubtitle: "Trouvez ou vendez facilement des pièces automobiles.",
         login: "Connexion",
         register: "S'inscrire",
         loginTitle: "Bienvenue de nouveau",
