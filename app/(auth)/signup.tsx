@@ -195,6 +195,7 @@ const SignupScreen = () => {
             <View style={styles.modernInputContainer}>
               <ModernInput
                 label="Garage Name"
+                placeholder="Enter your garage name"
                 value={garageName}
                 onChangeText={setGarageName}
                 variant="filled"
@@ -222,6 +223,7 @@ const SignupScreen = () => {
             <View style={styles.modernInputContainer}>
               <ModernInput
                 label="Manager Name"
+                placeholder="Enter manager name"
                 value={managerName}
                 onChangeText={setManagerName}
                 variant="filled"
@@ -255,6 +257,7 @@ const SignupScreen = () => {
             <View style={styles.modernInputContainer}>
               <ModernInput
                 label="Phone"
+                placeholder="Enter your phone number"
                 value={phoneNumber}
                 onChangeText={setPhoneNumber}
                 keyboardType="phone-pad"
@@ -272,6 +275,7 @@ const SignupScreen = () => {
             <View style={styles.modernInputContainer}>
               <ModernInput
                 label="Email"
+                placeholder="Enter your email address"
                 value={email}
                 onChangeText={(text) => {
                   setEmail(text);
@@ -320,6 +324,7 @@ const SignupScreen = () => {
             <View style={styles.modernInputContainer}>
               <ModernInput
                 label="Password"
+                placeholder="Create a secure password"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
@@ -769,11 +774,13 @@ const styles = StyleSheet.create({
     fontWeight: '700' as const,
   },
   phoneCodePrefix: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
     paddingVertical: 4,
     backgroundColor: 'rgba(0, 0, 0, 0.05)',
     borderRadius: 6,
-    marginRight: 8,
+    marginRight: 12,
+    minWidth: 50,
+    alignItems: 'center',
   },
   phonePrefixText: {
     fontSize: 12,

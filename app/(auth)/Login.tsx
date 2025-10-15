@@ -207,6 +207,7 @@ const LoginScreen = () => {
               <View style={styles.inputContainer}>
                 <ModernInput
                   label="Phone"
+                  placeholder="Enter your phone number"
                   value={phoneNumber}
                   onChangeText={setPhoneNumber}
                   keyboardType="phone-pad"
@@ -224,6 +225,7 @@ const LoginScreen = () => {
               <View style={styles.inputContainer}>
                 <ModernInput
                   label="Password"
+                  placeholder="Enter your password"
                   value={password}
                   onChangeText={setPassword}
                   secureTextEntry
@@ -457,11 +459,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   phonePrefix: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
     paddingVertical: 4,
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
     borderRadius: 6,
-    marginRight: 8,
+    marginRight: 12,
+    minWidth: 50,
+    alignItems: 'center',
   },
   phonePrefixText: {
     fontSize: 12,

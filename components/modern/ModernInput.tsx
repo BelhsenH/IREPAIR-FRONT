@@ -43,12 +43,15 @@ export const ModernInput: React.FC<ModernInputProps> = ({
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [isLabelFloating, setIsLabelFloating] = useState(!!value);
-  const labelAnim = useRef(new Animated.Value(value ? 1 : 0)).current;
+  // Label should float if there's a value OR if there's a placeholder (to avoid overlap)
+  const shouldLabelFloat = !!value || !!placeholder;
+  const [isLabelFloating, setIsLabelFloating] = useState(shouldLabelFloat);
+  const labelAnim = useRef(new Animated.Value(shouldLabelFloat ? 1 : 0)).current;
 
   // Handle focus
   const handleFocus = () => {
     setIsFocused(true);
+    // Always float label when focused if there's a label
     if (!isLabelFloating && label) {
       setIsLabelFloating(true);
       Animated.timing(labelAnim, {
@@ -62,7 +65,8 @@ export const ModernInput: React.FC<ModernInputProps> = ({
   // Handle blur
   const handleBlur = () => {
     setIsFocused(false);
-    if (!value && isLabelFloating && label) {
+    // Only un-float label if there's no value AND no placeholder
+    if (!value && !placeholder && isLabelFloating && label) {
       setIsLabelFloating(false);
       Animated.timing(labelAnim, {
         toValue: 0,
@@ -77,14 +81,16 @@ export const ModernInput: React.FC<ModernInputProps> = ({
     onChangeText(text);
     
     if (label) {
-      if (text && !isLabelFloating) {
+      // Float label if there's text OR placeholder
+      const shouldFloat = text || placeholder;
+      if (shouldFloat && !isLabelFloating) {
         setIsLabelFloating(true);
         Animated.timing(labelAnim, {
           toValue: 1,
           duration: 150,
           useNativeDriver: false,
         }).start();
-      } else if (!text && !isFocused && isLabelFloating) {
+      } else if (!shouldFloat && !isFocused && isLabelFloating) {
         setIsLabelFloating(false);
         Animated.timing(labelAnim, {
           toValue: 0,
@@ -216,8 +222,9 @@ export const ModernInput: React.FC<ModernInputProps> = ({
   // Determine placeholder text
   const getPlaceholder = () => {
     if (label) {
-      // If there's a label, only show placeholder when label is not floating
-      return !isLabelFloating ? '' : placeholder;
+      // Show placeholder when field is empty (regardless of focus state)
+      // This provides better UX - users see guidance even when not focused
+      return !value ? placeholder : '';
     }
     // If no label, show placeholder normally
     return placeholder;
